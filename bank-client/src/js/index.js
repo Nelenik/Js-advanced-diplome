@@ -1,16 +1,46 @@
-import "../index.html";
+import '../index.html';
+import '../scss/index.scss';
+import Navigo from 'navigo';
+import { ServerApi } from './js-parts/_helpers';
+import { Header } from './js-parts/_dom-helpers';
 
-import "../scss/index.scss";
-import {Tag} from './js-parts/_helper.js'
+export const router = new Navigo('/');
+export const request = new ServerApi('http://localhost:3000');
 
+const appContainer = document.getElementById('bank-app');
+//создаем экземпляр хедера. можно исопльзовать один и тот же хедер только включая или навигацию
+const header = new Header(appContainer);
 
-const mult = (a, b) => a*b
+router.on(`/accounts`, (data) => {
+	header.enableNav = true;
+});
+router.on(`/banks`, (data) => {
+	header.enableNav = true;
+});
+router.on(`/currencies`, (data) => {
+	header.enableNav = true;
+});
+router.on(`/`, (data) => {
+	header.enableNav = false;
+});
+router.resolve();
 
-console.log(mult(2,4))
-console.log(mult(5,2))
-
-const h1 = Tag.build({
-  tagName: 'h1',
-  text: 'how are you'
-})
-console.log(h1)
+request
+	.postData('/login', { login: 'developer', password: 'skillbox' })
+	.then(({ error, payload }) => {
+		if (error) throw Error(error);
+		if (payload) return request.getData('/accounts', payload.token);
+	})
+	.then((data) => console.log(data))
+	.catch((err) => {
+		switch (err.message) {
+			case `Invalid password`:
+				console.log('пытаемся войти с неверным паролем');
+				break;
+			case `No such user`:
+				console.log(' пользователя с таким логином не существует');
+				break;
+			default:
+				throw err;
+		}
+	});

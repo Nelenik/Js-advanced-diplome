@@ -3,8 +3,8 @@ module.exports = {
 	env: {
 		browser: true,
 		es2021: true,
-    'cypress/globals': true,
-    'jest/globals': true,
+		'cypress/globals': true,
+		'jest/globals': true,
 	},
 	plugins: ['prettier', 'jest', 'cypress'],
 	extends: [

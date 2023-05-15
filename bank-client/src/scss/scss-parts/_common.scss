@@ -1,0 +1,6 @@
+@import './variables';
+
+// container первая переменная max-width, вторая - padding
+.container {
+  @include container(1370px, 15px);
+}

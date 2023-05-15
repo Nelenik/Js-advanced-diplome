@@ -1,0 +1,32 @@
+.header {
+  padding: 24px 0;
+  background-color: $brand-primary;
+
+  &__container {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__logo {}
+
+  &__logo-img {}
+
+  &__nav {
+    display: flex;
+    gap: 25px;
+  }
+
+  &__link {
+    padding: 16px 24px;
+    background-color: $white;
+    border-radius: 7px;
+    font-family: 'Ubuntu';
+    font-size: 1rem;
+    line-height: 125%; /* 20px/16 */
+    font-weight: 500;
+    color: $brand-primary;
+
+  }
+}

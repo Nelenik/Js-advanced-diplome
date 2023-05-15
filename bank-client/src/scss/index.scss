@@ -1,12 +1,5 @@
 @import '../../node_modules/normalize.css/normalize.css';
+@import './scss-parts/base';
+@import './scss-parts/common';
+@import './scss-parts/header';
 
-body {
-  background-color: navy;
-  color: white;
-  font-size: 2rem;
-}
-
-img {
-  width: 200px;
-  aspect-ratio: 1/1;
-}
