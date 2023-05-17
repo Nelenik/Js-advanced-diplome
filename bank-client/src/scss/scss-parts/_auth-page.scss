@@ -1,0 +1,111 @@
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 262px;
+
+  &__form-wrap {
+    width: min(100%, 500px);
+    padding: 50px 40px;
+    border-radius: 50px;
+    background-color: $gray-7;
+  }
+
+  &__title {
+    @include resetMg;
+    margin-bottom: 35px;
+    font-family: 'WorkSans', sans-serif;
+    font-weight: 700;
+    font-size: 2.125rem;
+    line-height: 117.647059%;
+    /* 40px/34 */
+    text-align: center;
+  }
+
+  &__form {}
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+
+
+  &__label {
+    position: relative;
+    width: min(100%, 375px);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    span {
+      display: inline-block;
+      width: 20%;
+      font-family: 'Ubuntu', sans-serif;
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 125%; /* 20px/16 */
+      color: $brand-secondary1;
+      text-align: right;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 25px;
+    }
+
+    &:last-child {
+      margin-bottom: 30px;
+    }
+  }
+
+  &__field {
+    flex-grow: 1;
+    /* 300px/375 */
+    padding: 10px 16px;
+    min-height: 44px;
+    border-radius: 7px;
+    background-color: $white;
+    border: 1px solid $gray-5;
+  }
+
+  &__sbmt-btn {
+    max-width: max-content;
+    transform: translateX(110%);
+  }
+}
+
+.show-password-btn {
+  display: inline-block;
+  width: 44px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: visibility 0.3s ease;
+  &--visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .eye {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: inline-block;
+    width: 16px;
+    aspect-ratio: 1/1;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    z-index: -1;
+
+
+    &--visible {
+      visibility: visible;
+      z-index: 1;
+    }
+  }
+
+}

@@ -1,46 +1,38 @@
 import '../index.html';
 import '../scss/index.scss';
 import Navigo from 'navigo';
-import { ServerApi } from './js-parts/_helpers';
-import { Header } from './js-parts/_dom-helpers';
+import { el, mount } from 'redom';
+import { ServerApi } from './js-parts/_server-api';
+import { Header } from './js-parts/_header';
+import { authPage } from './js-parts/_authorization';
 
 export const router = new Navigo('/');
 export const request = new ServerApi('http://localhost:3000');
 
 const appContainer = document.getElementById('bank-app');
-//создаем экземпляр хедера. можно исопльзовать один и тот же хедер только включая или навигацию
-const header = new Header(appContainer);
+//создаем экземпляр хедера. можно исопльзовать один и тот же хедер только включая или меню
+const header = new Header({
+	appContainer: appContainer,
+});
+const main = el('main.page');
+mount(appContainer, main);
 
+// регистрируем роутеры
 router.on(`/accounts`, (data) => {
-	header.enableNav = true;
+	main.innerHTML = '';
+	header.enableMenu = true;
 });
 router.on(`/banks`, (data) => {
-	header.enableNav = true;
+	main.innerHTML = '';
+	header.enableMenu = true;
 });
 router.on(`/currencies`, (data) => {
-	header.enableNav = true;
+	main.innerHTML = '';
+	header.enableMenu = true;
 });
 router.on(`/`, (data) => {
-	header.enableNav = false;
+	main.innerHTML = '';
+	header.enableMenu = false;
+	authPage(main);
 });
 router.resolve();
-
-request
-	.postData('/login', { login: 'developer', password: 'skillbox' })
-	.then(({ error, payload }) => {
-		if (error) throw Error(error);
-		if (payload) return request.getData('/accounts', payload.token);
-	})
-	.then((data) => console.log(data))
-	.catch((err) => {
-		switch (err.message) {
-			case `Invalid password`:
-				console.log('пытаемся войти с неверным паролем');
-				break;
-			case `No such user`:
-				console.log(' пользователя с таким логином не существует');
-				break;
-			default:
-				throw err;
-		}
-	});

@@ -6,7 +6,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-// const CopyPlugin = require('copy-webpack-plugin');
 
 const postCss = require('postcss-preset-env');
 
@@ -56,7 +55,6 @@ module.exports = {
 	target,
 	devtool,
 	watch: devMode,
-	// entry: path.resolve(__dirname, 'src', 'index.js'),
 	entry: jsFiles,
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -68,9 +66,6 @@ module.exports = {
 		new MiniCssExtractPlugin({
 			filename: `css/${filename('[name]', '.css')}`,
 		}),
-		// new CopyPlugin({
-		// 	patterns: [{ from: './src/sprite.svg', to: '' }],
-		// }),
 	],
 	module: {
 		rules: [
@@ -129,6 +124,10 @@ module.exports = {
 						presets: [['@babel/preset-env', { targets: 'defaults' }]],
 					},
 				},
+			},
+			{
+				test: /\.svg$/,
+				loader: 'svg-inline-loader',
 			},
 		],
 	},

@@ -9,13 +9,23 @@
     align-items: center;
   }
 
-  &__logo {}
+  &__logo {
+    svg {
+      display: inline-block;
+      width: 100px;
+      height: 50px;
+    }
+  }
 
   &__logo-img {}
 
   &__nav {
     display: flex;
     gap: 25px;
+
+    &--hidden{
+      display: none;
+    }
   }
 
   &__link {
@@ -27,6 +37,8 @@
     line-height: 125%; /* 20px/16 */
     font-weight: 500;
     color: $brand-primary;
-
+    &--active {
+      background-color: $state-info;
+    }
   }
 }

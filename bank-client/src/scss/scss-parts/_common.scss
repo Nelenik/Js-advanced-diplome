@@ -1,6 +1,33 @@
 @import './variables';
 
 // container первая переменная max-width, вторая - padding
+[id="bank-app"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.page {
+  flex-grow: 1;
+}
 .container {
   @include container(1370px, 15px);
+}
+
+.blue-btn {
+  padding: 16px 24px;
+  background-color: $brand-primary;
+  border-radius: 7px;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 125%; /* 20px/16 */
+  color: $white;
+  &--sm {
+    padding: 14px 21px;
+    font-size: 0.875rem;
+  }
+  &--m {
+    padding: 18px 27px;
+    font-size: 1.125rem;
+  }
 }
