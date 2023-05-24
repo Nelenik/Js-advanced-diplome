@@ -1,74 +1,34 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from './_routes';
 import { request, router } from '..';
+import { Card } from './_card';
+
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
 
-class Card {
-	constructor() {
-		this.card = el('li.card');
-		this.countNum = el('h2.card__count-num', el('div.sk.sk-text.sk-text--50'));
-		this.balance = el('p.card__balance', el('div.sk.sk-text.sk-text--25'));
-		const cardFooter = el('div.card__footer');
-		this.lastTrasaction = el('p.card__transaction', [
-			el('div.sk.sk-text.sk-text--50'),
-			el('div.sk.sk-text.sk-text--30'),
-		]);
-		this.btn = el('button.btn-reset.sk.sk-btn', { type: 'button' });
-		setChildren(cardFooter, [this.lastTrasaction, this.btn]);
-		setChildren(this.card, [this.countNum, this.balance, cardFooter]);
-	}
-
-	getFormattedDate(dateStr) {
-		const date = new Date(dateStr);
-		const monthes = [
-			'января',
-			'февраля',
-			'марта',
-			'апреля',
-			'мая',
-			'июня',
-			'июля',
-			'августа',
-			'сентября',
-			'октября',
-			'ноября',
-			'декабря',
-		];
-		return `${date.getDate()} ${
-			monthes[date.getMonth()]
-		} ${date.getFullYear()}`;
-	}
-
-	updateCard(data) {
-		this.countNum.textContent = data.account;
-		this.balance.textContent = data.balance;
-		this.lastTrasaction.innerHTML = `<strong>Последняя транзакция:</strong> ${this.getFormattedDate(
-			data.transactions[0].date
-		)}`;
-		this.btn.textContent = 'Открыть';
-		this.btn.setAttribute('class', 'blue-btn blue-btn--sm card__btn');
-	}
-}
+const cardsList = el('ul.list-reset.counts-page__counts');
+let countsData = [];
 
 export function countsPage(main, headerInstance) {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;
+
 	const container = el('div.container.counts-page', [
 		el('h1.counts-page__title.title', 'Ваши счета'),
 		createControlPanel(),
-		createCardList(),
+		cardsList,
 	]);
 	mount(main, container);
+	createCardsByRequest();
 }
 
 function createControlPanel() {
+	const controlsWrap = el('div.counts-page__controls');
 	const radioContent = [
 		{ text: 'По номеру', value: 'account' },
 		{ text: 'По балансу', value: 'balance' },
 		{ text: 'По последней транзакции', value: 'transaction' },
 	];
-	const controlsWrap = el('div.counts-page__controls');
 	const radioBtns = radioContent.map((item) => {
 		return el('label.sorting__choice', [
 			el('input.sorting__def-radio', { type: 'radio', value: item.value }),
@@ -84,27 +44,30 @@ function createControlPanel() {
 		{ type: 'button' },
 		'Создать новый счет'
 	);
+
+	newCount.addEventListener('click', newCountHandler);
 	setChildren(controlsWrap, [sorting, newCount]);
 	return controlsWrap;
 }
 
-function createCardList() {
-	const list = el('ul.list-reset.counts-page__counts');
-	for (let i = 0; i < (localStorage.getItem('_countsQuantity') || 1); i++) {
-		mount(list, new Card().card);
+//создаем список карточек по запросу
+function createCardsByRequest() {
+	//сначала загружаем скелет, из хранилища берем количество карточек из предыдущего запроса
+	for (let i = 0; i < (+localStorage.getItem('_countsQuantity') || 1); i++) {
+		new Card().appendCard(cardsList);
 	}
+	// делаем запрос на сервер и после получения ответа отрисовываем карточки
 	request
 		.getCounts()
 		.then((res) => {
-			console.log(res);
+			countsData = [...res];
+			console.log(countsData);
 			localStorage.setItem('_countsQuantity', `${res.length}`);
-			list.innerHTML = '';
+			cardsList.innerHTML = '';
 			res.forEach((item) => {
 				const card = new Card();
-				console.log(card);
 				card.updateCard(item);
-				console.log(card);
-				mount(list, card.card);
+				card.appendCard(cardsList);
 			});
 		})
 		.catch((err) => {
@@ -116,6 +79,17 @@ function createCardList() {
 				console.log('У вас пока нет счетов');
 			}
 		});
+}
 
-	return list;
+//обработчик кнопки создания нового счета
+function newCountHandler() {
+	const card = new Card();
+	card.appendCard(cardsList);
+	request
+		.createCount()
+		.then((res) => {
+			countsData.push(res);
+			card.updateCard(res);
+		})
+		.catch((err) => console.log(err));
 }

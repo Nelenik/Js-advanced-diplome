@@ -5,8 +5,8 @@ import { el, mount } from 'redom';
 import { routes } from './js-parts/_routes'; //маршруты
 import { ServerApi } from './js-parts/_server-api'; //класс с методами запросов
 import { Header } from './js-parts/_header'; // класс хедера
-import { authPage } from './js-parts/_auth-page'; //страница авторизации
-import { countsPage } from './js-parts/_counts-page';
+import { authPage } from './js-parts/auth-page'; //страница авторизации
+import { countsPage } from './js-parts/counts-page';
 
 export const router = new Navigo(routes.auth);
 export const request = new ServerApi('http://localhost:3000');
@@ -21,10 +21,12 @@ const main = el('main.page');
 mount(appContainer, main);
 
 // регистрируем роутеры
-router.on(routes.accounts, (data) => {
+router.on(routes.auth, () => {
+	authPage(main, headerInstance);
+	sessionStorage.removeItem('token');
+});
+router.on(routes.accounts, () => {
 	countsPage(main, headerInstance);
-	// main.innerHTML = '';
-	// headerInstance.enableMenu = true;
 });
 router.on(routes.banks, (data) => {
 	main.innerHTML = '';
@@ -34,10 +36,9 @@ router.on(routes.currencies, (data) => {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;
 });
-router.on(routes.auth, (data) => {
-	// main.innerHTML = '';
-	// headerInstance.enableMenu = false;
-	authPage(main, headerInstance);
-	sessionStorage.removeItem('token');
+router.on(routes.countInfo, (data) => {
+	Header.mainMenuLinks.forEach((link) =>
+		link.classList.remove('header__link--active')
+	);
 });
 router.resolve();

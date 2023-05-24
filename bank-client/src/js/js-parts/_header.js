@@ -12,7 +12,7 @@ import logo from '!!svg-inline-loader!../../img/logo.svg';
 */
 export class Header {
 	static mainMenuLinks = [];
-	navBtnsData = [
+	navLinksdata = [
 		{ text: 'Банкоматы', route: routes.banks },
 		{ text: 'Счета', route: routes.accounts },
 		{ text: 'Валюта', route: routes.currencies },
@@ -36,7 +36,7 @@ export class Header {
 	createNav() {
 		this.nav = el('nav.header__nav');
 
-		this.navBtnsData.map((item) => {
+		this.navLinksdata.map((item) => {
 			const link = el('a.header__link', { href: item.route }, item.text);
 			Header.mainMenuLinks.push(link);
 
@@ -62,7 +62,6 @@ export class Header {
 			Header.mainMenuLinks.forEach((el) =>
 				el.classList.remove('header__link--active')
 			);
-
 			link.classList.add('header__link--active');
 		}
 	}

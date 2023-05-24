@@ -29,16 +29,8 @@ export class ServerApi {
 			},
 		});
 		if (res.ok) {
-			// const { error, payload } = await res.json();
-			// if (error) throw Error(error);
-			// if (payload) {
-			// 	return payload;
-			// } else {
-			// 	throw Error('Нет данных');
-			// }
 			return await this.processResponse(res);
 		}
-		// return await res.json();
 	}
 
 	async get(path, enableToken = false) {
@@ -50,12 +42,15 @@ export class ServerApi {
 		if (res.ok) {
 			return await this.processResponse(res);
 		}
-		// return await res.json();
 	}
 
 	async login(bodyData) {
 		const payload = await this.post('/login', bodyData);
 		sessionStorage.setItem('token', payload.token);
+	}
+
+	async createCount() {
+		return this.post('/create-account', {}, true);
 	}
 
 	async getCounts() {

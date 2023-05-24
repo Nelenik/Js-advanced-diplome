@@ -3,4 +3,5 @@ export const routes = {
 	accounts: '/accounts',
 	banks: '/banks',
 	currencies: '/currencies',
+	countInfo: '/account/:id',
 };
