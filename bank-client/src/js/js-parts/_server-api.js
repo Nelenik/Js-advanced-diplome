@@ -1,30 +1,3 @@
-// export class ServerApi {
-// 	constructor(baseUrl) {
-// 		this.baseUrl = baseUrl;
-// 	}
-
-// 	async postData(request, bodyData, token) {
-// 		const res = await fetch(this.baseUrl + request, {
-// 			method: 'POST',
-// 			body: JSON.stringify(bodyData),
-// 			headers: {
-// 				'Content-Type': 'application/json',
-// 				Authorization: token ? `Basic ${token}` : '',
-// 			},
-// 		});
-// 		return await res.json();
-// 	}
-
-// 	async getData(request, token) {
-// 		const res = await fetch(this.baseUrl + request, {
-// 			headers: {
-// 				Authorization: token ? `Basic ${token}` : '',
-// 			},
-// 		});
-// 		return await res.json();
-// 	}
-// }
-
 export class ServerApi {
 	constructor(baseUrl) {
 		this.baseUrl = baseUrl;
@@ -34,6 +7,16 @@ export class ServerApi {
 		const token = sessionStorage.getItem('token');
 		if (token) return token;
 		else throw Error('Session expired');
+	}
+
+	async processResponse(response) {
+		const { error, payload } = await response.json();
+		if (error) throw Error(error);
+		if (payload) {
+			return payload;
+		} else {
+			throw Error('Нет данных');
+		}
 	}
 
 	async post(path, bodyData, enableToken = false) {
@@ -46,13 +29,14 @@ export class ServerApi {
 			},
 		});
 		if (res.ok) {
-			const { error, payload } = await res.json();
-			if (error) throw Error(error);
-			if (payload) {
-				return payload;
-			} else {
-				throw Error('Нет данных');
-			}
+			// const { error, payload } = await res.json();
+			// if (error) throw Error(error);
+			// if (payload) {
+			// 	return payload;
+			// } else {
+			// 	throw Error('Нет данных');
+			// }
+			return await this.processResponse(res);
 		}
 		// return await res.json();
 	}
@@ -63,20 +47,18 @@ export class ServerApi {
 				Authorization: enableToken ? `Basic ${this.getToken()}` : '',
 			},
 		});
-		return await res.json();
+		if (res.ok) {
+			return await this.processResponse(res);
+		}
+		// return await res.json();
 	}
 
 	async login(bodyData) {
-		// const { error, payload } = await this.post('/login', bodyData);
 		const payload = await this.post('/login', bodyData);
 		sessionStorage.setItem('token', payload.token);
-		// if (error) throw Error(error);
-		// if (payload) {
-		// 	sessionStorage.setItem('token', payload.token);
-		// }
 	}
 
-	async authorization() {
+	async getCounts() {
 		return this.get('/accounts', true);
 	}
 }

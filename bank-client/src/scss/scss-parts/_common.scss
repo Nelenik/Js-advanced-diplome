@@ -12,7 +12,14 @@
 .container {
   @include container(1370px, 15px);
 }
-
+.title {
+  @include resetMg;
+  font-family: 'WorkSans', sans-serif;
+  font-weight: 700;
+  font-size: 2.125rem;
+  line-height: 117.647059%;
+  /* 40px/34 */
+}
 .blue-btn {
   padding: 16px 24px;
   background-color: $brand-primary;
@@ -31,3 +38,4 @@
     font-size: 1.125rem;
   }
 }
+

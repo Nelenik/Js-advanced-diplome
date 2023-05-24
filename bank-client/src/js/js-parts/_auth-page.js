@@ -1,15 +1,18 @@
 import { el, mount, setChildren } from 'redom';
+import { routes } from './_routes';
 import { request, router } from '..';
-import eye from '!!svg-inline-loader!../../img/eye.svg';
-import eyeCrossed from '!!svg-inline-loader!../../img/eye-crossed.svg';
+import eyeSvg from '!!svg-inline-loader!../../img/eye.svg';
+import eyeCrossedSvg from '!!svg-inline-loader!../../img/eye-crossed.svg';
 
-export function authPage(main) {
+export function authPage(main, headerInstance) {
+	main.innerHTML = '';
+	headerInstance.enableMenu = false;
 	mount(
 		main,
 		el(
 			'.container.auth-page',
 			el('.auth-page__form-wrap', [
-				el('h1.auth-page__title', 'Вход в аккаунт'),
+				el('h1.auth-page__title.title', 'Вход в аккаунт'),
 				createForm(),
 			])
 		)
@@ -37,7 +40,7 @@ function createForm() {
 				type: 'button',
 				id: 'showPassword',
 			});
-			showPasswordBtn.innerHTML = eye + eyeCrossed;
+			showPasswordBtn.innerHTML = eyeSvg + eyeCrossedSvg;
 			mount(label, showPasswordBtn);
 			const passwordInput = label.querySelector('input');
 			const btnActiveClass = 'show-password-btn--visible';
@@ -62,20 +65,11 @@ function createForm() {
 	);
 	setChildren(form, [...fields, sbmtBtn]);
 
-	form.addEventListener('submit', (e) => {
-		e.preventDefault();
-		request
-			.login({ login: form.authLogin.value, password: form.authPassword.value })
-			.then(() => {
-				router.navigate('/accounts');
-				document
-					.querySelector(`.header__link[href*="/accounts"`)
-					.classList.add('header__link--active');
-			});
-	});
+	form.addEventListener('submit', authFormHandler);
 	return form;
 }
 
+// переключение видимости пароля
 function switchPasswordVisibility(input) {
 	return function (e) {
 		const icons = e.currentTarget.querySelectorAll('.eye');
@@ -83,4 +77,21 @@ function switchPasswordVisibility(input) {
 
 		icons.forEach((el) => el.classList.toggle('eye--visible'));
 	};
+}
+// обработчик сабмита формы авторизации
+function authFormHandler(e) {
+	e.preventDefault();
+	const target = e.currentTarget;
+	request
+		.login({
+			login: target.authLogin.value,
+			password: target.authPassword.value,
+		})
+		.then(() => {
+			router.navigate(routes.accounts);
+			document
+				.querySelector(`.header__link[href*="${routes.accounts}"`)
+				.classList.add('header__link--active');
+		})
+		.catch((err) => console.log(err.message));
 }

@@ -1,10 +1,12 @@
 .auth-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 262px;
+  position: relative;
+  height: max(623px, calc(100vh - 100px));
 
   &__form-wrap {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: min(100%, 500px);
     padding: 50px 40px;
     border-radius: 50px;
@@ -12,13 +14,7 @@
   }
 
   &__title {
-    @include resetMg;
     margin-bottom: 35px;
-    font-family: 'WorkSans', sans-serif;
-    font-weight: 700;
-    font-size: 2.125rem;
-    line-height: 117.647059%;
-    /* 40px/34 */
     text-align: center;
   }
 

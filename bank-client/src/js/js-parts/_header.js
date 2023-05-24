@@ -1,4 +1,5 @@
 import { el, mount } from 'redom';
+import { routes } from './_routes';
 import { router } from '../index.js';
 // вставляем инлайново свг
 import logo from '!!svg-inline-loader!../../img/logo.svg';
@@ -12,10 +13,10 @@ import logo from '!!svg-inline-loader!../../img/logo.svg';
 export class Header {
 	static mainMenuLinks = [];
 	navBtnsData = [
-		{ text: 'Банкоматы', route: '/banks' },
-		{ text: 'Счета', route: '/accounts' },
-		{ text: 'Валюта', route: '/currencies' },
-		{ text: 'Выйти', route: '/' },
+		{ text: 'Банкоматы', route: routes.banks },
+		{ text: 'Счета', route: routes.accounts },
+		{ text: 'Валюта', route: routes.currencies },
+		{ text: 'Выйти', route: routes.auth },
 	];
 
 	constructor(options) {
@@ -54,7 +55,7 @@ export class Header {
 		});
 		mount(this.container, this.nav);
 	}
-
+	// переключаем стили активной ссылки
 	switchActiveLink(link, route) {
 		const isExit = link.textContent === 'Выйти';
 		if (window.location.pathname === route && !isExit) {
