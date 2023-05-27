@@ -1,7 +1,9 @@
-import { el, mount, setChildren } from 'redom';
+import { el, mount } from 'redom';
 import { routes } from './_routes';
 import { request, router } from '..';
-import { Card } from './_card';
+import { Card } from './Card';
+import { Select } from './Select';
+import { sortBy } from './_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -24,21 +26,28 @@ export function countsPage(main, headerInstance) {
 
 function createControlPanel() {
 	const controlsWrap = el('div.counts-page__controls');
-	const radioContent = [
-		{ text: 'По номеру', value: 'account' },
-		{ text: 'По балансу', value: 'balance' },
-		{ text: 'По последней транзакции', value: 'transaction' },
+	const selectContent = [
+		{ text: 'По номеру', value: 'account', name: 'sort' },
+		{ text: 'По балансу', value: 'balance', name: 'sort' },
+		{
+			text: 'По последней транзакции',
+			value: 'transactions.0.date',
+			name: 'sort',
+		},
 	];
-	const radioBtns = radioContent.map((item) => {
-		return el('label.sorting__choice', [
-			el('input.sorting__def-radio', { type: 'radio', value: item.value }),
-			el('span.sorting__choice-text', item.text),
-		]);
+
+	const sorter = new Select({
+		selectContent: selectContent,
+		onChange: (radioBtn) => {
+			countsData.sort(sortBy(radioBtn.value));
+			cardsList.innerHTML = '';
+			countsData.forEach((item) => {
+				const card = new Card();
+				card.updateCard(item);
+				card.appendCard(cardsList);
+			});
+		},
 	});
-	const sorting = el('div.counts-page__sorting.sorting', [
-		el('button.btn-reset.sorting__btn', { type: 'button' }, 'Сортировка'),
-		el('div.sorting__dropdown', [...radioBtns]),
-	]);
 	const newCount = el(
 		'button.btn-reset.counts-page__new-count.blue-btn',
 		{ type: 'button' },
@@ -46,7 +55,9 @@ function createControlPanel() {
 	);
 
 	newCount.addEventListener('click', newCountHandler);
-	setChildren(controlsWrap, [sorting, newCount]);
+	mount(controlsWrap, newCount);
+	sorter.prependAt(controlsWrap);
+	// setChildren(controlsWrap, [sorterWrap, newCount]);
 	return controlsWrap;
 }
 
@@ -60,6 +71,7 @@ function createCardsByRequest() {
 	request
 		.getCounts()
 		.then((res) => {
+			console.log(res);
 			countsData = [...res];
 			console.log(countsData);
 			localStorage.setItem('_countsQuantity', `${res.length}`);

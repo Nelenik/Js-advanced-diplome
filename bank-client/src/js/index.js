@@ -3,8 +3,8 @@ import '../scss/index.scss';
 import Navigo from 'navigo';
 import { el, mount } from 'redom';
 import { routes } from './js-parts/_routes'; //маршруты
-import { ServerApi } from './js-parts/_server-api'; //класс с методами запросов
-import { Header } from './js-parts/_header'; // класс хедера
+import { ServerApi } from './js-parts/Serverapi'; //класс с методами запросов
+import { Header } from './js-parts/Header'; // класс хедера
 import { authPage } from './js-parts/auth-page'; //страница авторизации
 import { countsPage } from './js-parts/counts-page';
 
@@ -28,11 +28,11 @@ router.on(routes.auth, () => {
 router.on(routes.accounts, () => {
 	countsPage(main, headerInstance);
 });
-router.on(routes.banks, (data) => {
+router.on(routes.banks, () => {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;
 });
-router.on(routes.currencies, (data) => {
+router.on(routes.currencies, () => {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;
 });
