@@ -38,8 +38,8 @@ function createControlPanel() {
 
 	const sorter = new Select({
 		selectContent: selectContent,
-		onChange: (radioBtn) => {
-			countsData.sort(sortBy(radioBtn.value));
+		onChange: (value) => {
+			countsData.sort(sortBy(value));
 			cardsList.innerHTML = '';
 			countsData.forEach((item) => {
 				const card = new Card();
@@ -47,6 +47,9 @@ function createControlPanel() {
 				card.appendCard(cardsList);
 			});
 		},
+		additionalClass: 'counts-page__sorting',
+		placeholderText: 'Сортировка',
+		toChangePlaceholder: false,
 	});
 	const newCount = el(
 		'button.btn-reset.counts-page__new-count.blue-btn',
