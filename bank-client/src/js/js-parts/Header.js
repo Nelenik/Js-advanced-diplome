@@ -74,6 +74,6 @@ export class Header {
 	}
 
 	get enableMenu() {
-		return this._enableNav;
+		return this._enableMenu;
 	}
 }

@@ -56,4 +56,10 @@ export class ServerApi {
 	async getCounts() {
 		return this.get('/accounts', true);
 	}
+
+	async getCountInfo(id) {
+		return this.get(`/account/${id}`, true);
+	}
+
+	async sendTransfer(bodyObj) {}
 }

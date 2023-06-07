@@ -37,7 +37,7 @@ export class Card {
 			monthes[date.getMonth()]
 		} ${date.getFullYear()}`;
 	}
-
+	// при получении данных скелетное содержимое элементов заменяется на пришедшие данные
 	updateCard(data) {
 		this.countNum.textContent = data.account;
 		this.balance.textContent = `${data.balance} ₽`;
@@ -47,7 +47,7 @@ export class Card {
 		this.lastTransaction.innerHTML = `<strong>Последняя транзакция:</strong> ${dateStr}`;
 		this.cardLink.textContent = 'Открыть';
 		this.cardLink.setAttribute('class', 'blue-btn blue-btn--sm card__link');
-		const href = routes.countInfo.replace(/:id$/, data.account);
+		const href = `${routes.countInfo}?id=${data.account}`;
 		this.cardLink.href = href;
 		this.cardLink.addEventListener('click', (e) => {
 			e.preventDefault();

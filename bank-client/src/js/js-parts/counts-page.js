@@ -38,7 +38,7 @@ function createControlPanel() {
 
 	const sorter = new Select({
 		selectContent: selectContent,
-		onChange: (value) => {
+		onChange: (inst, value) => {
 			countsData.sort(sortBy(value));
 			cardsList.innerHTML = '';
 			countsData.forEach((item) => {

@@ -1,36 +1,14 @@
-.btn-reset {
-  padding: 0;
-  border: none;
-  background: none;
-  outline: none;
-  cursor: pointer;
-}
-
 .select {
   box-sizing: border-box;
   position: relative;
   width: 100%;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: 'OpenSans', sans-serif;
   font-size: 1rem;
   line-height: 24px;
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translate(0, -50%);
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 5px 5px 0 5px;
-    border-color: #182233 transparent transparent transparent;
-    transition: transform 0.4s ease, background-color 0.4s ease;
-  }
-
-  &--active {
-    &::after {
-      transform: translate(0, -50%) rotate(180deg);
+  &--active .select__btn{
+    &::before {
+      transform: translate(0, -50%) rotate(135deg);
     }
   }
 
@@ -38,27 +16,34 @@
     box-sizing: inherit;
     position: relative;
     width: 100%;
-    padding: 10px 16px;
-    font: inherit;
-    text-align: left;
-    border-radius: 7px;
-    border: 1px solid #116ACC;
+    height: 100%;
+    padding: 13px 21px 13px 21px;
+    white-space: normal;
+    word-wrap: break-word;
+    border-radius: 4px;
+    border: 1px solid #C0CAD6;
     background-color: #ffffff;
 
-    &:hover {
-      background-color: rgba(160, 195, 255, 0.2);
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 24px;
+      transform: translate(0, -50%) rotate(-45deg);
+      width: 10px;
+      height: 10px;
+      border: 1px solid #000000;
+      border-width: 0 0 1px 1px;
+      transition: transform 0.4s ease, background-color 0.4s ease;
+      z-index: 2;
+      pointer-events: none;
     }
 
-    &:focus-visible,
-    &:focus {
-      background-color: rgba(160, 195, 255, 0.4)
-    }
   }
 
   &__dropdown {
     overflow: auto;
-    max-height: 150px;
-
+    max-height: 400px;
     position: absolute;
     top: 100%;
     left: 0;
@@ -76,12 +61,19 @@
     transform: scaleY(0);
     transform-origin: top;
     transition: opacity 0.3s ease, visibility 0.3s ease, z-index 0.3s ease, transform 0.3s ease;
+    -ms-overflow-style: none;
+    /* IE и Edge */
+    scrollbar-width: none;
 
     &--js-shown {
       opacity: 1;
       visibility: visible;
       z-index: 100;
       transform: scaleY(1);
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 
@@ -105,8 +97,7 @@
     appearance: none;
   }
 
-  &__item-text {
-  }
+  &__item-text {}
 
   &__autocomplete {
     box-sizing: inherit;
