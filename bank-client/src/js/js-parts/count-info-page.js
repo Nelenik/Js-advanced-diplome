@@ -2,7 +2,7 @@ import { el, mount } from 'redom';
 import { routes } from './_routes';
 import { request, router } from '..';
 import { Select } from './Select';
-import { GetIndex } from './_helpers';
+import { BalancePerPeriod } from './_helpers';
 
 export function countInfoPage(main, headerInstance, countId) {
 	main.innerHTML = '';
@@ -11,19 +11,12 @@ export function countInfoPage(main, headerInstance, countId) {
 		.getCountInfo(countId)
 		.then((res) => {
 			console.log(res);
-			let ind = GetIndex.index(res.transactions, compare);
-			console.log(ind);
+			const balance = new BalancePerPeriod(res, 30);
+			console.log(balance);
+			const transPerMonth = balance.arrangeBalanceData();
+			console.log(transPerMonth);
 		})
 		.catch((err) => {
 			console.log(err);
 		});
-}
-
-function compare(arr, middle) {
-	const nowDate = new Date();
-	const lastDateStart = new Date(nowDate.getFullYear() - 1, nowDate.getMonth());
-	const elemDate = new Date(arr[middle].date);
-	elemDate.setDate(1);
-	elemDate.setHours(0, 0, 0, 0);
-	return elemDate < lastDateStart;
 }
