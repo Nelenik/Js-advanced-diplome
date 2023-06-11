@@ -37,7 +37,11 @@ export class Header {
 		this.nav = el('nav.header__nav');
 
 		this.navLinksdata.map((item) => {
-			const link = el('a.header__link', { href: item.route }, item.text);
+			const link = el(
+				'a.header__link.link-reset',
+				{ href: item.route },
+				item.text
+			);
 			Header.mainMenuLinks.push(link);
 
 			window.addEventListener('load', () => {

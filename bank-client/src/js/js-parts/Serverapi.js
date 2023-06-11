@@ -2,13 +2,13 @@ export class ServerApi {
 	constructor(baseUrl) {
 		this.baseUrl = baseUrl;
 	}
-
+	// получаем токен из хранилища, если там пусто выдает ошибку
 	getToken() {
 		const token = sessionStorage.getItem('token');
 		if (token) return token;
 		else throw Error('Session expired');
 	}
-
+	// обработка запроса
 	async processResponse(response) {
 		const { error, payload } = await response.json();
 		if (error) throw Error(error);
@@ -18,7 +18,7 @@ export class ServerApi {
 			throw Error('Нет данных');
 		}
 	}
-
+	// post-запрос
 	async post(path, bodyData, enableToken = false) {
 		const res = await fetch(this.baseUrl + path, {
 			method: 'POST',
@@ -32,7 +32,7 @@ export class ServerApi {
 			return await this.processResponse(res);
 		}
 	}
-
+	// get-запрос
 	async get(path, enableToken = false) {
 		const res = await fetch(this.baseUrl + path, {
 			headers: {

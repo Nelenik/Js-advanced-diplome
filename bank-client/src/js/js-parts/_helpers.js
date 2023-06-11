@@ -1,3 +1,13 @@
+import { router } from '..';
+import { routes } from './_routes';
+
+export function redirectOnExipredSession(message) {
+	if (/^session\sexpired?/i.test(message)) {
+		console.log(message);
+		router.navigate(routes.auth);
+	}
+}
+
 /*функция для сортировки массива объектов по свойству
 arr.sort(sortBy('name'))
 если объект имеет более сложную структуру например :

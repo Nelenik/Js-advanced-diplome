@@ -93,5 +93,9 @@ function authFormHandler(e) {
 				.querySelector(`.header__link[href*="${routes.accounts}"`)
 				.classList.add('header__link--active');
 		})
-		.catch((err) => console.log(err.message));
+		.catch((err) => {
+			let message = err.message;
+			if (message !== 'Invalid password' || message !== 'No such user')
+				throw err;
+		});
 }

@@ -3,7 +3,7 @@ import { routes } from './_routes';
 import { request, router } from '..';
 import { Card } from './Card';
 import { Select } from './Select';
-import { sortBy } from './_helpers';
+import { sortBy, redirectOnExipredSession } from './_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -84,10 +84,8 @@ function createCardsByRequest() {
 			});
 		})
 		.catch((err) => {
-			if (/^session\sexpired?/i.test(err.message)) {
-				console.log(err.message);
-				router.navigate(routes.auth);
-			}
+			redirectOnExipredSession(err.message);
+
 			if (/^нет\sданных?/i.test(err.message)) {
 				console.log('У вас пока нет счетов');
 			}
