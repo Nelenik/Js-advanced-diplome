@@ -11,10 +11,7 @@ html {
   box-sizing: inherit;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+
 
 img {
   object-fit: cover;
@@ -41,6 +38,12 @@ body {
 [role="button"],
 .btn-reset {
   -webkit-tap-highlight-color: transparent;
+}
+
+.link-reset {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
 }
 
 .list-reset {

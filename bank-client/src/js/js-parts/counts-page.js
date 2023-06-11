@@ -74,9 +74,7 @@ function createCardsByRequest() {
 	request
 		.getCounts()
 		.then((res) => {
-			console.log(res);
 			countsData = [...res];
-			console.log(countsData);
 			localStorage.setItem('_countsQuantity', `${res.length}`);
 			cardsList.innerHTML = '';
 			res.forEach((item) => {

@@ -46,7 +46,10 @@ export class Card {
 			: 'нет транзакций';
 		this.lastTransaction.innerHTML = `<strong>Последняя транзакция:</strong> ${dateStr}`;
 		this.cardLink.textContent = 'Открыть';
-		this.cardLink.setAttribute('class', 'blue-btn blue-btn--sm card__link');
+		this.cardLink.setAttribute(
+			'class',
+			'link-reset blue-btn blue-btn--sm card__link'
+		);
 		const href = `${routes.countInfo}?id=${data.account}`;
 		this.cardLink.href = href;
 		this.cardLink.addEventListener('click', (e) => {

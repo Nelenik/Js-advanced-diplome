@@ -34,7 +34,6 @@ router.on(routes.countInfo, (data) => {
 	let id;
 	if (match) id = match[1];
 	else throw new Error('Такой счет не существует');
-	console.log(data);
 	countInfoPage(main, headerInstance, `${id}`);
 	Header.mainMenuLinks.forEach((link) =>
 		link.classList.remove('header__link--active')

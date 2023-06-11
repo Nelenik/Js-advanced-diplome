@@ -33,7 +33,11 @@ export function sortBy(prop) {
 		}
 	};
 }
-
+/*
+ Класс BalancePerPeriod используется для вычисления и организации данных о балансе счета на протяжении заданного периода. Он принимает информацию о балансе и транзакциях, определяет начальную дату для расчета и группирует транзакции по месяцам. Затем класс вычисляет баланс на конец каждого месяца, учитывая входящие и исходящие транзакции. Результат представлен в виде массива с информацией о месяце, транзакциях и балансе.
+ - monthesToSubtract - это за сколько месяцев нужно посчитать баланс. Нужно иметь в виду что отсчет идет с 0, т.е. если нужен период в 6 мес, указываем 5;
+ -response - это объект полученный из запроса. Код учитывает конкретную структуру данных
+*/
 export class BalancePerPeriod {
 	monthNames = [
 		'янв',
@@ -57,23 +61,6 @@ export class BalancePerPeriod {
 		this.monthesToSubtract = monthesToSubtract;
 		this.getStartDate();
 	}
-	//находим индекс элемента с которого начинается рассчет баланса
-	findIndex() {
-		let left = 0;
-		let right = this.transArray.length - 1;
-		while (left <= right) {
-			let middle = Math.floor((left + right) / 2);
-			const elemDate = new Date(this.transArray[middle].date);
-			elemDate.setDate(1);
-			elemDate.setHours(0, 0, 0, 0);
-			if (elemDate < this.startDate) {
-				left = middle + 1;
-			} else {
-				right = middle - 1;
-			}
-		}
-		return left > this.transArray.length - 1 ? -1 : left;
-	}
 	// получаем дату с которой начинаем отсчет, например 6/12 мес назад
 	getStartDate() {
 		const nowDate = new Date();
@@ -88,16 +75,28 @@ export class BalancePerPeriod {
 	}
 	// вычленяем из исходного массива c транзациями инетерсующий нас период и распределяем элементы по месяцам
 	divideTransPerMonth() {
-		const searchIndex = this.findIndex();
+		const searchIndex = this.transArray.findIndex(
+			(el) => new Date(el.date) >= this.startDate
+		);
 		const newTransArr = this.transArray.slice(searchIndex);
-		const transByMonths = {};
+		// const transByMonths = {};
+		const transByMonths = [];
 		for (let item of newTransArr) {
 			const transDate = new Date(item.date);
 			const monthName = this.monthNames[transDate.getMonth()];
-			if (!transByMonths[monthName]) {
-				transByMonths[monthName] = [];
+			const year = transDate.getFullYear();
+			let checkArray = transByMonths.find((item) => {
+				return item.month === monthName && item.year === year;
+			});
+			if (!checkArray) {
+				transByMonths.push({
+					month: monthName,
+					year: year,
+					transactions: [item],
+				});
+			} else {
+				checkArray.transactions.push(item);
 			}
-			transByMonths[monthName].push(item);
 		}
 		return transByMonths;
 	}
@@ -113,30 +112,32 @@ export class BalancePerPeriod {
 				outgoing += item.amount;
 			}
 		});
-		let difference = incoming - outgoing;
-		return { incoming, outgoing, difference };
+		return { incoming, outgoing };
 	}
 
 	arrangeBalanceData() {
-		const transPerMonth = Object.entries(this.divideTransPerMonth());
-		const balancePerMonth = [];
+		const transPerMonth = this.divideTransPerMonth();
 		let toSubtractDifference = 0;
-		for (let i = transPerMonth.length - 1; i >= 0; i--) {
-			const [key, value] = transPerMonth[i];
-			const { incoming, outgoing, difference } =
-				this.calculateBalancePerMonth(value);
-			this._startBalance -= toSubtractDifference;
-			toSubtractDifference = difference;
-			balancePerMonth.unshift([
-				key,
-				{
-					transPerMonth: value,
+		const balancePerMonth = transPerMonth
+			.reverse()
+			.map((item) => {
+				const { incoming, outgoing } = this.calculateBalancePerMonth(
+					item.transactions
+				);
+				const difference = incoming - outgoing;
+				const commonTransSum = incoming + outgoing;
+				this._startBalance -= toSubtractDifference;
+				toSubtractDifference = difference;
+				item.transactions = {
 					incoming: incoming,
 					outgoing: outgoing,
+					difference: difference,
+					commonTransSum: commonTransSum,
 					balance: this._startBalance,
-				},
-			]);
-		}
+				};
+				return item;
+			})
+			.reverse();
 		return balancePerMonth;
 	}
 }
