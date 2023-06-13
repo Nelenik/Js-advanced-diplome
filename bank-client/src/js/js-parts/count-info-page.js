@@ -185,7 +185,7 @@ function createTransferForm(countId) {
 		transSbmtBtn,
 	]);
 
-	form.addEventListener('submit', formSbmtHandler(countId));
+	form.addEventListener('submit', formSbmtHandler(countId, countNumField));
 
 	return form;
 }
@@ -194,13 +194,14 @@ function createTransferForm(countId) {
 function formSbmtHandler(countId) {
 	return function (e) {
 		e.preventDefault();
+		if (document.activeElement == e.target.transSelect) return; //предотвращает отправку формы при выборе значения enter-ом
+
 		const targetCountValue = e.target.transSelect.value;
-		console.log('submitted');
 		const amountValue = e.target.transAmount.value;
 		if (targetCountValue.length > 10) {
 			if (LS.get('savedCounts')) {
 				LS.change('savedCounts', (saved) => {
-					saved.push(targetCountValue);
+					if (!saved.includes(targetCountValue)) saved.push(targetCountValue);
 				});
 			} else {
 				LS.set('savedCounts', [targetCountValue]);
@@ -213,6 +214,9 @@ function formSbmtHandler(countId) {
 				amount: amountValue,
 			})
 			.then((res) => console.log(res))
-			.catch((err) => console.log(err));
+			.catch((err) => console.log(err))
+			.finally(() => {
+				e.target.reset();
+			});
 	};
 }

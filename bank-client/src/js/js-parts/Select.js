@@ -30,6 +30,12 @@ mySelect.selectContent = массив со значениями радиокно
 
 --зависим от библиотеки redom
 --нужно быть осторожным с полем 'name' для других элементов формы, чтобы не было конфликта, также при использовании FormData полученный объект нужно будет отредактировать вручную, т.к. радиокнопка туда попадет.
+--при использовании внутри формы, чтобы при выборе enter-ом не отправилась форма, в обработчике в самом начале пишем: form.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  if (document.activeElement == e.target.transSelect) return;
+
+  ---далее нужный код---
+})
 */
 
 export class Select {
@@ -57,6 +63,7 @@ export class Select {
 
 		this.isSelected = null;
 		this.selectValue = '';
+		this.prevActive = null;
 
 		// создаем элементы селекта
 		this.select = el(`div.select.${this.additionalClass}`);
@@ -109,7 +116,7 @@ export class Select {
 			// если радиокнопка изначально выбрана
 			this.setSelected(radioBtn, item.text);
 			// обработчики
-			this.radioHandlers(radioBtn, item);
+			this.radioHandlers(radioBtn);
 			return radioLabel;
 		});
 		setChildren(this.dropdown, this.radioWrap);
@@ -147,7 +154,8 @@ export class Select {
 			if (this.toChangePlaceholder) {
 				if (this.isSelect()) {
 					this.selectTrigger.textContent = itemText;
-					this.selectTrigger.value = this.selectValue;
+					// this.selectTrigger.value = this.selectValue;
+					this.selectTrigger.dataset.value = this.selectValue;
 					this.select.classList.add('select--selected');
 				} else {
 					this.autocompleteInput.value = itemText;
@@ -157,23 +165,21 @@ export class Select {
 		}
 	}
 	//функции с обработчиками по элементам
-	radioHandlers(radioBtn, selectContentItem) {
-		radioBtn.addEventListener('click', async (e) => {
+	radioHandlers(radioBtn) {
+		radioBtn.addEventListener('click', (e) => {
 			if (e.clientX && e.clientY) {
-				const target = e.currentTarget;
-				target.checked = true;
-				this.setSelected(target, selectContentItem.text);
 				this.isOpen = false;
 			}
 		});
 
 		radioBtn.addEventListener('keypress', (e) => {
 			if (e.key === 'Enter' || e.key === 'Return') {
-				const target = e.currentTarget;
-				target.checked = true;
-				this.setSelected(target, selectContentItem.text);
 				this.isOpen = false;
 			}
+		});
+
+		radioBtn.addEventListener('blur', (e) => {
+			this.prevActive = e.target;
 		});
 	}
 
@@ -260,6 +266,13 @@ export class Select {
 		}
 		this.dropdown.classList.remove('select__dropdown--js-shown');
 		this.select.classList.remove('select--active');
+		if (this.prevActive) {
+			this.setSelected(
+				this.prevActive,
+				this.prevActive.nextElementSibling.textContent
+			);
+			console.log(this.prevActive.nextElementSibling.textContent);
+		}
 	}
 
 	appendAt(target) {
