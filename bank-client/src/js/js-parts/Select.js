@@ -92,6 +92,7 @@ export class Select {
 	}
 
 	set selectContent(value) {
+		this.dropdown.innerHTML = '';
 		this._selectContent = value;
 		this.radioWrap = value?.map((item) => {
 			const radioBtn = el('input.select__def-radio', {
@@ -148,7 +149,9 @@ export class Select {
 					this.selectTrigger.textContent = itemText;
 					this.selectTrigger.value = this.selectValue;
 					this.select.classList.add('select--selected');
-				} else this.autocompleteInput.value = itemText;
+				} else {
+					this.autocompleteInput.value = itemText;
+				}
 			}
 			this.onChange(this, this.selectValue);
 		}
@@ -164,7 +167,7 @@ export class Select {
 			}
 		});
 
-		radioBtn.addEventListener('keyup', async (e) => {
+		radioBtn.addEventListener('keypress', (e) => {
 			if (e.key === 'Enter' || e.key === 'Return') {
 				const target = e.currentTarget;
 				target.checked = true;

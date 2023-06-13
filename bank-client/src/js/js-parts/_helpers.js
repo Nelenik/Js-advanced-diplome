@@ -1,14 +1,37 @@
 import { router } from '..';
 import { routes } from './_routes';
 
+/*функция перенаправления на главную страницу при истекшей сессии*/
 export function redirectOnExipredSession(message) {
 	if (/^session\sexpired?/i.test(message)) {
 		console.log(message);
 		router.navigate(routes.auth);
 	}
 }
+/*******************************************************/
 
-/*функция для сортировки массива объектов по свойству
+/* функция wait*/
+export function wait(ms) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
+/*******************************************************/
+
+/*пользовательская функция метода массивов sort(), сортирует по заданной подстроке = arr.sort(sortByStr('str')*/
+export function sortByStr(str) {
+	return (a, b) => {
+		const regexp = new RegExp('^' + str);
+		const testA = regexp.test(a);
+		const testB = regexp.test(b);
+		if (testA && !testB) return -1;
+		if (testA && testB && a < b) return -1;
+		if (!testA && !testB) return 0;
+	};
+}
+/*******************************************************/
+
+/*пользовательская функция метода массивов sort(), сортирует по имени свойства
 arr.sort(sortBy('name'))
 если объект имеет более сложную структуру например :
 {
@@ -43,6 +66,8 @@ export function sortBy(prop) {
 		}
 	};
 }
+/*******************************************************/
+
 /*
  Класс BalancePerPeriod используется для вычисления и организации данных о балансе счета на протяжении заданного периода. Он принимает информацию о балансе и транзакциях, определяет начальную дату для расчета и группирует транзакции по месяцам. Затем класс вычисляет баланс на конец каждого месяца, учитывая входящие и исходящие транзакции. Результат представлен в виде массива с информацией о месяце, транзакциях и балансе.
  - monthesToSubtract - это за сколько месяцев нужно посчитать баланс. Нужно иметь в виду что отсчет идет с 0, т.е. если нужен период в 6 мес, указываем 5;
@@ -149,6 +174,26 @@ export class BalancePerPeriod {
 			})
 			.reverse();
 		return balancePerMonth;
+	}
+}
+/*******************************************************/
+
+/*Утилита для работы с localStorage содержит методы get(принимает ключ), set(принимает ключ и сохраняемый элементы) и change(принимает ключ и колбэк, в который передаем полученный из хранилища элемент, изменяем его как нужно внутри функции в зависимости от типа данных) */
+export class LS {
+	static get(key) {
+		let saved = localStorage.getItem(key);
+		if (saved) return JSON.parse(saved);
+		else return false;
+	}
+
+	static set(key, item) {
+		localStorage.setItem(key, JSON.stringify(item));
+	}
+
+	static change(key, func) {
+		let saved = LS.get(key);
+		func(saved);
+		LS.set(key, saved);
 	}
 }
 /*******************************************************/

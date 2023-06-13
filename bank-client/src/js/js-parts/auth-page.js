@@ -12,7 +12,7 @@ export function authPage(main, headerInstance) {
 		el(
 			'.container.auth-page',
 			el('.auth-page__form-wrap', [
-				el('h1.auth-page__title.title', 'Вход в аккаунт'),
+				el('h1.auth-page__title.title.title--lg', 'Вход в аккаунт'),
 				createForm(),
 			])
 		)

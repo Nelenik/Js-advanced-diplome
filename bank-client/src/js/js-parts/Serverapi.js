@@ -61,5 +61,7 @@ export class ServerApi {
 		return this.get(`/account/${id}`, true);
 	}
 
-	async sendTransfer(bodyObj) {}
+	async sendTransfer(bodyObj) {
+		return this.post('/transfer-funds', bodyObj, true);
+	}
 }

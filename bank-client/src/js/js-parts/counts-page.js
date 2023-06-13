@@ -16,7 +16,7 @@ export function countsPage(main, headerInstance) {
 	headerInstance.enableMenu = true;
 
 	const container = el('div.container.counts-page', [
-		el('h1.counts-page__title.title', 'Ваши счета'),
+		el('h1.counts-page__title.title.title--lg', 'Ваши счета'),
 		createControlPanel(),
 		cardsList,
 	]);
