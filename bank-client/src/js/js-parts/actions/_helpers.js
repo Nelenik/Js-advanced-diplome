@@ -1,4 +1,4 @@
-import { router } from '..';
+import { router } from '../..';
 import { routes } from './_routes';
 
 /*функция перенаправления на главную страницу при истекшей сессии*/

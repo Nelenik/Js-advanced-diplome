@@ -1,0 +1,79 @@
+.history-table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+
+  &__head-row {}
+
+  &__tbody {}
+
+  &__body-row {}
+}
+
+.head-row {
+  border-radius: 15px;
+  background-color: $brand-primary;
+
+  color: $white;
+
+  &__cell {
+    padding: 20px 0;
+    text-align: left;
+
+    &:first-child {
+      padding-left: 50px;
+      border-radius: 15px 0 0 15px;
+      width: calc(100%/3.5);
+    }
+
+    &:nth-child(2) {
+      width: calc(100%/3.5);
+    }
+
+    &:nth-child(3) {
+      width: 90px;
+    }
+
+    &:last-child {
+      padding-right: 50px;
+      border-radius: 0 15px 15px 0;
+      width: 90px;
+    }
+  }
+
+  &__text {}
+}
+
+.body-row {
+  border-bottom: 1px solid rgba(0, 82, 255, 0.1);
+
+  &__cell {
+    padding: 21px 15px 26px;
+
+    &:first-child {
+      padding-left: 50px;
+      word-break: break-word;
+    }
+
+    &:nth-child(2) {
+      word-break: break-word;
+    }
+
+    &:last-child {
+      padding-right: 50px;
+    }
+  }
+
+  &__text {}
+
+}
+
+.amount {
+  &--in {
+    color: green;
+  }
+
+  &--out {
+    color: red
+  }
+}

@@ -1,8 +1,8 @@
 import { el, mount } from 'redom';
-import { routes } from './_routes';
-import { router } from '../index.js';
+import { routes } from '../actions/_routes';
+import { router } from '../../index.js';
 // вставляем инлайново свг
-import logo from '!!svg-inline-loader!../../img/logo.svg';
+import logo from '!!svg-inline-loader!../../../img/logo.svg';
 
 /*
 инициализация new Header({

@@ -1,5 +1,5 @@
 import { el, mount, setChildren } from 'redom';
-import { routes } from './_routes';
+import { routes } from './actions/_routes';
 import { request, router } from '..';
 import eyeSvg from '!!svg-inline-loader!../../img/eye.svg';
 import eyeCrossedSvg from '!!svg-inline-loader!../../img/eye-crossed.svg';

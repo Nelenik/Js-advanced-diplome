@@ -2,9 +2,9 @@ import '../index.html';
 import '../scss/index.scss';
 import Navigo from 'navigo';
 import { el, mount } from 'redom';
-import { routes } from './js-parts/_routes'; //маршруты
-import { ServerApi } from './js-parts/Serverapi'; //класс с методами запросов
-import { Header } from './js-parts/Header'; // класс хедера
+import { routes } from './js-parts/actions/_routes'; //маршруты
+import { ServerApi } from './js-parts/classes/Serverapi'; //класс с методами запросов
+import { Header } from './js-parts/classes/Header'; // класс хедера
 import { authPage } from './js-parts/auth-page'; //страница авторизации
 import { countsPage } from './js-parts/counts-page'; //все счета
 import { countInfoPage } from './js-parts/count-info-page'; //информация об одном счете

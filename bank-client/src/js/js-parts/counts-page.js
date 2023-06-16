@@ -1,9 +1,9 @@
 import { el, mount } from 'redom';
-import { routes } from './_routes';
+import { routes } from './actions/_routes';
 import { request, router } from '..';
-import { Card } from './Card';
-import { Select } from './Select';
-import { sortBy, redirectOnExipredSession } from './_helpers';
+import { Card } from './classes/Card';
+import { Select } from './classes/Select';
+import { sortBy, redirectOnExipredSession } from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';

@@ -1,14 +1,16 @@
 import { el, mount, setChildren } from 'redom';
-import { routes } from './_routes';
+import { routes } from './actions/_routes';
 import { request, router } from '..';
-import { Select } from './Select';
+import { Select } from './classes/Select';
 import {
 	BalancePerPeriod,
 	redirectOnExipredSession,
 	sortByStr,
 	wait,
 	LS,
-} from './_helpers';
+} from './actions/_helpers';
+import { Table } from './classes/Table';
+// import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
 import arrowSvg from '!!svg-inline-loader!../../img/arrow.svg';
 
@@ -76,7 +78,7 @@ function getHistoryData(countId, toModificate) {
 			]);
 
 			console.log(res);
-			const balancePerPeriod = new BalancePerPeriod(res, 6);
+			const balancePerPeriod = new BalancePerPeriod(res, 5);
 			const transPerMonth = balancePerPeriod.arrangeBalanceData();
 			console.log(transPerMonth);
 		})
