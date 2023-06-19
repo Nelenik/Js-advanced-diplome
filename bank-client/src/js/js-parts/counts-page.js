@@ -3,7 +3,11 @@ import { routes } from './actions/_routes';
 import { request, router } from '..';
 import { Card } from './classes/Card';
 import { Select } from './classes/Select';
-import { sortBy, redirectOnExipredSession } from './actions/_helpers';
+import {
+	sortBy,
+	redirectOnExipredSession,
+	resetPage,
+} from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -11,9 +15,8 @@ import { sortBy, redirectOnExipredSession } from './actions/_helpers';
 const cardsList = el('ul.list-reset.counts-page__counts');
 let countsData = [];
 
-export function countsPage(main, headerInstance) {
-	main.innerHTML = '';
-	headerInstance.enableMenu = true;
+export function countsPage(main) {
+	resetPage(main);
 
 	const container = el('div.container.counts-page', [
 		el('h1.counts-page__title.title.title--lg', 'Ваши счета'),

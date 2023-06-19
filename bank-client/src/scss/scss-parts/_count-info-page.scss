@@ -71,8 +71,15 @@
   border-radius: 50px;
   background-color: $gray-7;
 
+  &__title {}
+
   &__select-field {}
 
   &__amount-field {}
   &__sbmt-btn {}
+}
+
+.history {
+
+  &__title{}
 }

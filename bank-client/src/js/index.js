@@ -13,28 +13,29 @@ export const router = new Navigo(routes.auth);
 export const request = new ServerApi('http://localhost:3000');
 
 const appContainer = document.getElementById('bank-app');
-//создаем экземпляр хедера. можно исопльзовать один и тот же хедер только включая или выключая меню
-const headerInstance = new Header({
+//создаем экземпляр хедера. можно исопльзовать один и тот же хедер только включая или выключая меню.
+export const headerInstance = new Header({
 	appContainer: appContainer,
 });
+
 // контейнер со содержимым страницы
 const main = el('main.page');
 mount(appContainer, main);
 
 // регистрируем роутеры
 router.on(routes.auth, () => {
-	authPage(main, headerInstance);
+	authPage(main);
 	sessionStorage.removeItem('token');
 });
 router.on(routes.accounts, () => {
-	countsPage(main, headerInstance);
+	countsPage(main);
 });
 router.on(routes.countInfo, (data) => {
 	const match = data.queryString.match(/id=(.*)/);
 	let id;
 	if (match) id = match[1];
 	else throw new Error('Такой счет не существует');
-	countInfoPage(main, headerInstance, `${id}`);
+	countInfoPage(main, `${id}`);
 	Header.mainMenuLinks.forEach((link) =>
 		link.classList.remove('header__link--active')
 	);

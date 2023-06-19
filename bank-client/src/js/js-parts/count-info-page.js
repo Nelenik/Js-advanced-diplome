@@ -8,79 +8,35 @@ import {
 	sortByStr,
 	wait,
 	LS,
+	resetPage,
 } from './actions/_helpers';
 import { Table } from './classes/Table';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
 import arrowSvg from '!!svg-inline-loader!../../img/arrow.svg';
 
-export function countInfoPage(main, headerInstance, countId) {
-	main.innerHTML = '';
-	headerInstance.enableMenu = true;
-
-	const {
-		countNum,
-		balance,
-		balanceRow,
-		transactionBlock,
-		dynamicBlock,
-		historyBlock,
-	} = createPageSkeleton();
+export function countInfoPage(main, countId) {
+	resetPage(main);
 
 	const container = el('div.container.count-info', [
 		createTitleRow(),
-		balanceRow,
-		transactionBlock,
-		dynamicBlock,
-		historyBlock,
+		...createPageSkeleton(),
 	]);
-	getHistoryData(countId, {
-		countNum,
-		balance,
-		transactionBlock,
-		dynamicBlock,
-		historyBlock,
-	});
-	// setInterval(() => {
-	// 	getHistoryData(countId, {
-	// 		countNum,
-	// 		balance,
-	// 		transactionBlock,
-	// 		dynamicBlock,
-	// 		historyBlock,
-	// 	});
-	// }, 20000);
 	mount(main, container);
+	getHistoryData(countId, updateDynamicBlocks, updateStaticBlocks);
+	let intervalId = setInterval(() => {
+		getHistoryData(countId, updateDynamicBlocks);
+	}, 60000);
+	LS.set('countDataRequestInterval', intervalId);
 }
 
 // действия с результатом запроса
-function getHistoryData(countId, toModificate) {
+function getHistoryData(countId, dynamicFunc, staticFunc) {
 	request
 		.getCountInfo(countId)
 		.then((res) => {
-			const {
-				countNum,
-				balance,
-				transactionBlock,
-				dynamicBlock,
-				historyBlock,
-			} = toModificate;
-			// заменяем скелетное содержимое пришедшими данными
-			countNum.textContent = `№ ${res.account}`;
-			balance.innerHTML = `
-			<span class="balance__text">Баланс</span>
-			<span class="balance__value">${res.balance} ₽</span>
-			`;
-			transactionBlock.innerHTML = '';
-			setChildren(transactionBlock, [
-				el('h2.transaction__title.title.title--m', 'Новый перевод'),
-				createTransferForm(countId),
-			]);
-
-			console.log(res);
-			const balancePerPeriod = new BalancePerPeriod(res, 5);
-			const transPerMonth = balancePerPeriod.arrangeBalanceData();
-			console.log(transPerMonth);
+			if (dynamicFunc) dynamicFunc(res);
+			if (staticFunc) staticFunc(res);
 		})
 		.catch((err) => {
 			redirectOnExipredSession(err.message);
@@ -91,7 +47,7 @@ function getHistoryData(countId, toModificate) {
 		});
 }
 
-// строка заголовка
+// блок заголовка страницы и кнопки назад
 function createTitleRow() {
 	const backLink = el('a.link-reset.blue-btn.count-info__back-link', {
 		href: `${routes.accounts}`,
@@ -107,10 +63,15 @@ function createTitleRow() {
 		backLink,
 	]);
 }
+
 // скелет данной страницы
 function createPageSkeleton() {
-	const countNum = el('h2.count-info__num', el('div.sk.sk-text.sk-text--75'));
-	const balance = el('p.count-info__balance.balance', [
+	const countNum = el(
+		'h2.count-info__num',
+		{ 'data-count': '' },
+		el('div.sk.sk-text.sk-text--75')
+	);
+	const balance = el('p.count-info__balance.balance', { 'data-balance': '' }, [
 		el('span.sk.sk-text.sk-text--50'),
 		el('span.sk.sk-text.sk-text--50'),
 	]);
@@ -118,27 +79,65 @@ function createPageSkeleton() {
 
 	const transactionBlock = el(
 		'div.count-info__transaction-wrap.transaction',
+		{ 'data-trans-block': '' },
 		el('div.sk.sk-block')
 	);
 	const dynamicBlock = el(
 		'div.count-info__dynamic-wrap',
+		{ 'data-count-dynamic': '' },
 		el('div.sk.sk-block')
 	);
 	const historyBlock = el(
 		'div.count-info__history-wrap',
+		{ 'data-count-history': '' },
 		el('div.sk.sk-block')
 	);
 
-	return {
-		countNum,
-		balance,
-		balanceRow,
-		transactionBlock,
-		dynamicBlock,
-		historyBlock,
-	};
+	return [balanceRow, transactionBlock, dynamicBlock, historyBlock];
 }
-// форма переводов
+
+/*****ОБНОВЛЕНИЕ БЛОКОВ ПРИШЕДШИМИ ДАННЫМИ******/
+// функция обновления статических блоков: форма транзакций и номер счета
+function updateStaticBlocks(res) {
+	const container = document.querySelector('.count-info');
+	const countNum = container.querySelector('[data-count]');
+	const transactionBlock = container.querySelector('[data-trans-block]');
+	// номер счета
+	countNum.textContent = `№ ${res.account}`;
+	// форма транзакций
+	transactionBlock.innerHTML = '';
+	setChildren(transactionBlock, [
+		el('h2.transaction__title.title.title--m', 'Новый перевод'),
+		createTransferForm(res.account),
+	]);
+}
+// функция обновления динамических блоков:баланс, история переводов, динамика транзакций
+function updateDynamicBlocks(res) {
+	const container = document.querySelector('.count-info');
+	const balance = container.querySelector('[data-balance]');
+	const historyBlock = container.querySelector('[data-count-history]');
+	const dynamicBlock = container.querySelector('[data-count-dynamic]');
+
+	// замена скелета строки с балансом
+	balance.innerHTML = `
+  <span class="balance__text">Баланс</span>
+  <span class="balance__value">${res.balance} ₽</span>
+  `;
+
+	//замена скелета блока история транзакций
+	const lastTenTransactions = res.transactions.reverse().slice(0, 10);
+	const historyTable = new Table(res.account, lastTenTransactions);
+	setChildren(historyBlock, [
+		el('h2.history__title.title.title--m', 'История переводов'),
+		historyTable.table,
+	]);
+
+	const balancePerPeriod = new BalancePerPeriod(res, 5);
+	const transPerMonth = balancePerPeriod.arrangeBalanceData();
+	console.log(transPerMonth);
+}
+
+// функция создает форму переводов
 function createTransferForm(countId) {
 	const form = el('form.count-info__trans-form.transaction', {
 		name: 'transForm',
@@ -151,7 +150,6 @@ function createTransferForm(countId) {
 		onInput: (select, value) => {
 			wait(300).then(() => {
 				let savedCounts = LS.get('savedCounts');
-				console.log(savedCounts);
 				if (!savedCounts) return;
 				savedCounts.sort(sortByStr(value));
 				const selectContent = savedCounts.map((item) => ({
@@ -192,11 +190,11 @@ function createTransferForm(countId) {
 	return form;
 }
 
-// form submit handler
+// обработчик сабмита формы отправки переводов
 function formSbmtHandler(countId) {
 	return function (e) {
 		e.preventDefault();
-		if (document.activeElement == e.target.transSelect) return; //предотвращает отправку формы при выборе значения enter-ом
+		if (document.activeElement == e.target.transSelect) return; //предотвращает отправку формы при выборе enter-ом значения в кастомном селекте
 
 		const targetCountValue = e.target.transSelect.value;
 		const amountValue = e.target.transAmount.value;
@@ -215,7 +213,9 @@ function formSbmtHandler(countId) {
 				to: targetCountValue,
 				amount: amountValue,
 			})
-			.then((res) => console.log(res))
+			.then((res) => {
+				updateDynamicBlocks(res);
+			})
 			.catch((err) => console.log(err))
 			.finally(() => {
 				e.target.reset();
