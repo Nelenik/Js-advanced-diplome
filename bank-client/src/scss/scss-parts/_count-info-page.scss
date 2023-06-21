@@ -83,3 +83,13 @@
 
   &__title{}
 }
+
+.chart-block {
+  display: flex;
+  flex-direction: column;
+  &__title{}
+
+  &__canvas-wrap{
+    flex-grow: 1;
+  }
+}

@@ -11,6 +11,7 @@ import {
 	resetPage,
 } from './actions/_helpers';
 import { Table } from './classes/Table';
+import { setBalanceDynamicChart } from './actions/_charts';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
 import arrowSvg from '!!svg-inline-loader!../../img/arrow.svg';
@@ -83,12 +84,12 @@ function createPageSkeleton() {
 		el('div.sk.sk-block')
 	);
 	const dynamicBlock = el(
-		'div.count-info__dynamic-wrap',
+		'div.count-info__dynamic-wrap.chart-block',
 		{ 'data-count-dynamic': '' },
 		el('div.sk.sk-block')
 	);
 	const historyBlock = el(
-		'div.count-info__history-wrap',
+		'div.count-info__history-wrap.history',
 		{ 'data-count-history': '' },
 		el('div.sk.sk-block')
 	);
@@ -125,16 +126,24 @@ function updateDynamicBlocks(res) {
   `;
 
 	//замена скелета блока история транзакций
-	const lastTenTransactions = res.transactions.reverse().slice(0, 10);
+	const transactionsDublicate = JSON.parse(JSON.stringify(res.transactions)); //делаем копию, т.к. reverse влияет на исходный массив
+	const lastTenTransactions = transactionsDublicate.reverse().slice(0, 10);
 	const historyTable = new Table(res.account, lastTenTransactions);
 	setChildren(historyBlock, [
 		el('h2.history__title.title.title--m', 'История переводов'),
 		historyTable.table,
 	]);
-
+	//замена блока с диаграммой
+	// преобразуем исходный массив с транзакциями в нужную нам структуру и активируем диаграмму
 	const balancePerPeriod = new BalancePerPeriod(res, 5);
 	const transPerMonth = balancePerPeriod.arrangeBalanceData();
 	console.log(transPerMonth);
+	const canvas = el('canvas', { id: 'countInfoBalanceChart' });
+	setChildren(dynamicBlock, [
+		el('h2.chart-block__title.title.title--m', 'Динамика баланса'),
+		el('div.chart-block__canvas-wrap.chart', canvas),
+	]);
+	setBalanceDynamicChart(canvas, transPerMonth);
 }
 
 // функция создает форму переводов

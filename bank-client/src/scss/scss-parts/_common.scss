@@ -53,3 +53,9 @@
     font-size: 1.125rem;
   }
 }
+
+// стили диаграммы для отзывчивости, рекомендовано chart.js
+.chart {
+  position: relative;
+  width: 100%;
+}
