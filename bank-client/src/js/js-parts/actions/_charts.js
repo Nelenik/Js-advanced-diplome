@@ -17,7 +17,6 @@ const chartAreaBorder = {
 };
 // функция настройки диаграммы динамика баланса
 export function setBalanceDynamicChart(canvas, balanceDataObj) {
-	console.log('dynamic chart');
 	const monthes = balanceDataObj.map((item) => item.month);
 	// вставляем пустые строки для увеличения отступов слева и справа от крайних столбцов
 	monthes.unshift('');

@@ -283,7 +283,9 @@ export class Select {
 	}
 	reset() {
 		this.selectValue = '';
-		this.isSelected.checked = false;
+		console.log(this.isSelected);
+		// this.isSelected.checked = false;
+		this.prevActive = null;
 		this.isSelected = null;
 		if (this.isSelect()) {
 			this.selectTrigger.textContent = this.placeholderText;

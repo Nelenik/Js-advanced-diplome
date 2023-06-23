@@ -5,4 +5,5 @@ export const routes = {
 	currencies: '/currencies',
 	// countInfo: '/account/:id',
 	countInfo: '/account',
+	balance: '/balance',
 };

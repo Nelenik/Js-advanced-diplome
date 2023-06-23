@@ -17,14 +17,20 @@ export function wait(ms) {
 	});
 }
 /*******************************************************/
-/*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestInterval*/
+/*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestTimeout*/
 export function resetPage(main, turnOnMenu = true) {
 	main.innerHTML = '';
 	headerInstance.enableMenu = turnOnMenu;
-	const key = 'countDataRequestInterval';
-	const intervalId = LS.get(key);
-	if (intervalId) clearInterval(intervalId);
+	const key = 'countDataRequestTimeout';
+	const timeoutId = LS.get(key);
+	if (timeoutId) clearTimeout(timeoutId);
 	LS.remove(key);
+}
+/*******************************************************/
+// получаем id из квери запроса, применяется на странице "просмотр счета" и "история баланса"
+export function getIdFromQueryStr(queryStr) {
+	const match = queryStr.match(/id=(.*)/);
+	if (match) return match[1];
 }
 /*******************************************************/
 

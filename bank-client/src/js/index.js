@@ -3,11 +3,13 @@ import '../scss/index.scss';
 import Navigo from 'navigo';
 import { el, mount } from 'redom';
 import { routes } from './js-parts/actions/_routes'; //маршруты
+import { getIdFromQueryStr } from './js-parts/actions/_helpers';
 import { ServerApi } from './js-parts/classes/Serverapi'; //класс с методами запросов
 import { Header } from './js-parts/classes/Header'; // класс хедера
 import { authPage } from './js-parts/auth-page'; //страница авторизации
 import { countsPage } from './js-parts/counts-page'; //все счета
 import { countInfoPage } from './js-parts/count-info-page'; //информация об одном счете
+import { balancePage } from './js-parts/balance-page'; //информация о истории баланса
 
 export const router = new Navigo(routes.auth);
 export const request = new ServerApi('http://localhost:3000');
@@ -31,14 +33,15 @@ router.on(routes.accounts, () => {
 	countsPage(main);
 });
 router.on(routes.countInfo, (data) => {
-	const match = data.queryString.match(/id=(.*)/);
-	let id;
-	if (match) id = match[1];
-	else throw new Error('Такой счет не существует');
+	const id = getIdFromQueryStr(data.queryString);
 	countInfoPage(main, `${id}`);
 	Header.mainMenuLinks.forEach((link) =>
 		link.classList.remove('header__link--active')
 	);
+});
+router.on(routes.balance, (data) => {
+	const id = getIdFromQueryStr(data.queryString);
+	balancePage(main, `${id}`);
 });
 router.on(routes.banks, () => {
 	main.innerHTML = '';

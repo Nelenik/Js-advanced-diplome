@@ -36,12 +36,10 @@
   }
 
   &__transaction-wrap {
-    position: relative;
 
   }
 
-  &__dynamic-wrap {
-    position: relative;
+  &__chart-wrap {
     padding: 25px 50px;
     min-height: 288px;
     border-radius: 50px;
@@ -51,7 +49,6 @@
 
   &__history-wrap {
     grid-column: span 2;
-    position: relative;
     padding: 25px 50px;
     min-height: 208px;
     border-radius: 50px;
@@ -66,6 +63,7 @@
 }
 
 .transaction {
+  position: relative;
   padding: 25px 50px;
   min-height: 288px;
   border-radius: 50px;
@@ -80,15 +78,39 @@
 }
 
 .history {
-
+  position: relative;
   &__title{}
+
+  &__link {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+  }
 }
 
 .chart-block {
+  position: relative;
   display: flex;
   flex-direction: column;
   &__title{}
 
+  &__link {
+
+
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      // z-index: 10;
+    }
+
+    &:focus-visible::before {
+      outline: 1px solid red;
+    }
+  }
   &__canvas-wrap{
     flex-grow: 1;
   }

@@ -21,18 +21,14 @@ export function countInfoPage(main, countId) {
 
 	const container = el('div.container.count-info', [
 		createTitleRow(),
-		...createPageSkeleton(),
+		createPageSkeleton(),
 	]);
 	mount(main, container);
-	getHistoryData(countId, updateDynamicBlocks, updateStaticBlocks);
-	let intervalId = setInterval(() => {
-		getHistoryData(countId, updateDynamicBlocks);
-	}, 60000);
-	LS.set('countDataRequestInterval', intervalId);
+	fetchHistoryData(countId, updateDynamicBlocks, updateStaticBlocks);
 }
 
 // действия с результатом запроса
-function getHistoryData(countId, dynamicFunc, staticFunc) {
+function fetchHistoryData(countId, dynamicFunc, staticFunc) {
 	request
 		.getCountInfo(countId)
 		.then((res) => {
@@ -45,6 +41,12 @@ function getHistoryData(countId, dynamicFunc, staticFunc) {
 			if (/^нет\sданных?/i.test(err.message)) {
 				console.log('Данные по счету отсутствуют');
 			}
+		})
+		.finally(() => {
+			let timeoutId = setTimeout(() => {
+				fetchHistoryData(countId, dynamicFunc);
+			}, 30000);
+			LS.set('countDataRequestTimeout', timeoutId);
 		});
 }
 
@@ -67,6 +69,7 @@ function createTitleRow() {
 
 // скелет данной страницы
 function createPageSkeleton() {
+	const fragment = document.createDocumentFragment();
 	const countNum = el(
 		'h2.count-info__num',
 		{ 'data-count': '' },
@@ -83,9 +86,9 @@ function createPageSkeleton() {
 		{ 'data-trans-block': '' },
 		el('div.sk.sk-block')
 	);
-	const dynamicBlock = el(
-		'div.count-info__dynamic-wrap.chart-block',
-		{ 'data-count-dynamic': '' },
+	const chartBlock = el(
+		'div.count-info__chart-wrap.chart-block',
+		{ 'data-count-chart': '' },
 		el('div.sk.sk-block')
 	);
 	const historyBlock = el(
@@ -93,57 +96,91 @@ function createPageSkeleton() {
 		{ 'data-count-history': '' },
 		el('div.sk.sk-block')
 	);
-
-	return [balanceRow, transactionBlock, dynamicBlock, historyBlock];
+	fragment.append(balanceRow, transactionBlock, chartBlock, historyBlock);
+	return fragment;
 }
 
-/*****ОБНОВЛЕНИЕ БЛОКОВ ПРИШЕДШИМИ ДАННЫМИ******/
+/*****************ОБНОВЛЕНИЕ СКЕЛЕТА****************************/
+
+// объект с функциями по замене скелета данными запроса
+const updateBlocks = {
+	updateBalance: (container, res) => {
+		// замена скелета строки с балансом
+		const balance = container.querySelector('[data-balance]');
+		balance.innerHTML = `
+  <span class="balance__text">Баланс</span>
+  <span class="balance__value">${res.balance.toFixed(2)} ₽</span>
+  `;
+	},
+	updateHistoryBlock: (container, res, href) => {
+		const historyBlock = container.querySelector('[data-count-history]');
+		//замена скелета блока история транзакций
+		const transactionsDublicate = JSON.parse(JSON.stringify(res.transactions)); //делаем копию, т.к. reverse влияет на исходный массив
+		const lastTenTransactions = transactionsDublicate.reverse().slice(0, 10);
+		const historyTable = new Table(res.account, lastTenTransactions);
+		setChildren(historyBlock, [
+			el(
+				'h2.history__title.title.title--m',
+				el(
+					'a.history__link.link-reset',
+					{ href: href, 'data-navigo': '' },
+					'История переводов'
+				)
+			),
+			historyTable.table,
+		]);
+	},
+	updateChartBlock: (container, res, href) => {
+		const chartBlock = container.querySelector('[data-count-chart]');
+		//замена блока с диаграммой
+		// преобразуем исходный массив с транзакциями в нужную нам структуру и активируем диаграмму
+		const balancePerPeriod = new BalancePerPeriod(res, 5);
+		const transPerMonth = balancePerPeriod.arrangeBalanceData();
+		const canvas = el('canvas', { id: 'countInfoBalanceChart' });
+		setChildren(chartBlock, [
+			el(
+				'h2.chart-block__title.title.title--m',
+				el(
+					'a.chart-block__link.link-reset',
+					{ href: href, 'data-navigo': '' },
+					'Динамика баланса'
+				)
+			),
+			el('div.chart-block__canvas-wrap.chart', canvas),
+		]);
+		setBalanceDynamicChart(canvas, transPerMonth);
+	},
+	updateCountNum: (container, res) => {
+		// номер счета
+		const countNum = container.querySelector('[data-count]');
+		countNum.textContent = `№ ${res.account}`;
+	},
+	updateTransactionBlock: (container, res) => {
+		// форма переводов
+		const transactionBlock = container.querySelector('[data-trans-block]');
+		transactionBlock.innerHTML = '';
+		setChildren(transactionBlock, [
+			el('h2.transaction__title.title.title--m', 'Новый перевод'),
+			createTransferForm(res.account),
+		]);
+	},
+};
 // функция обновления статических блоков: форма транзакций и номер счета
 function updateStaticBlocks(res) {
 	const container = document.querySelector('.count-info');
-	const countNum = container.querySelector('[data-count]');
-	const transactionBlock = container.querySelector('[data-trans-block]');
-	// номер счета
-	countNum.textContent = `№ ${res.account}`;
-	// форма транзакций
-	transactionBlock.innerHTML = '';
-	setChildren(transactionBlock, [
-		el('h2.transaction__title.title.title--m', 'Новый перевод'),
-		createTransferForm(res.account),
-	]);
+	const { updateCountNum, updateTransactionBlock } = updateBlocks;
+	updateCountNum(container, res);
+	updateTransactionBlock(container, res);
 }
 // функция обновления динамических блоков:баланс, история переводов, динамика транзакций
 function updateDynamicBlocks(res) {
+	console.log(res);
+	const { updateBalance, updateChartBlock, updateHistoryBlock } = updateBlocks;
 	const container = document.querySelector('.count-info');
-	const balance = container.querySelector('[data-balance]');
-	const historyBlock = container.querySelector('[data-count-history]');
-	const dynamicBlock = container.querySelector('[data-count-dynamic]');
-
-	// замена скелета строки с балансом
-	balance.innerHTML = `
-  <span class="balance__text">Баланс</span>
-  <span class="balance__value">${res.balance} ₽</span>
-  `;
-
-	//замена скелета блока история транзакций
-	const transactionsDublicate = JSON.parse(JSON.stringify(res.transactions)); //делаем копию, т.к. reverse влияет на исходный массив
-	const lastTenTransactions = transactionsDublicate.reverse().slice(0, 10);
-	const historyTable = new Table(res.account, lastTenTransactions);
-	setChildren(historyBlock, [
-		el('h2.history__title.title.title--m', 'История переводов'),
-		historyTable.table,
-	]);
-	//замена блока с диаграммой
-	// преобразуем исходный массив с транзакциями в нужную нам структуру и активируем диаграмму
-	const balancePerPeriod = new BalancePerPeriod(res, 5);
-	const transPerMonth = balancePerPeriod.arrangeBalanceData();
-	console.log(transPerMonth);
-	const canvas = el('canvas', { id: 'countInfoBalanceChart' });
-	setChildren(dynamicBlock, [
-		el('h2.chart-block__title.title.title--m', 'Динамика баланса'),
-		el('div.chart-block__canvas-wrap.chart', canvas),
-	]);
-	setBalanceDynamicChart(canvas, transPerMonth);
+	const href = `${routes.balance}?id=${res.account}`;
+	updateBalance(container, res);
+	updateChartBlock(container, res, href);
+	updateHistoryBlock(container, res, href);
 }
 
 // функция создает форму переводов
@@ -158,16 +195,26 @@ function createTransferForm(countId) {
 		placeholderText: 'Счет получателя',
 		onInput: (select, value) => {
 			wait(300).then(() => {
+				// получаем из хранилища сохраненные счета, фильтруем по строке и сортируем по значению
 				let savedCounts = LS.get('savedCounts');
 				if (!savedCounts) return;
-				savedCounts.sort(sortByStr(value));
-				const selectContent = savedCounts.map((item) => ({
-					text: item,
-					value: item,
-					name: 'counts',
-				}));
-				select.selectContent = selectContent;
-				select.isOpen = true;
+				const filteredCounts = savedCounts.filter((item) =>
+					item.startsWith(value)
+				);
+				filteredCounts.sort(sortByStr(value));
+				// если в поле ввода что то есть и в отфильтрованный массив счетов не пуст то открываем дропдаун, в противном случае сбрасываем селект
+				if (value.length > 0) {
+					const selectContent = filteredCounts.map((item) => ({
+						text: item,
+						value: item,
+						name: 'counts',
+					}));
+					select.selectContent = selectContent;
+					if (filteredCounts.length > 0) select.isOpen = true;
+				} else {
+					select.isOpen = false;
+					select.reset();
+				}
 			});
 		},
 	});
