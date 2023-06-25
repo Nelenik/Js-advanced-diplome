@@ -123,7 +123,10 @@ export function setTransactionsRatioChart(canvas, balanceDataObj) {
 	const min = 0;
 	const max = Math.ceil(Math.max(...commonTransSums));
 	const outgoing = balanceDataObj.map((item) => item.transactions.outgoing);
+	const outgoingMax = Math.max(...outgoing);
 	const incoming = balanceDataObj.map((item) => item.transactions.incoming);
+	const incomingMax = Math.max(...incoming);
+	const minFromInAndOutMax = Math.min(outgoingMax, incomingMax);
 	const data = {
 		labels: monthes,
 		datasets: [
@@ -180,19 +183,23 @@ export function setTransactionsRatioChart(canvas, balanceDataObj) {
 						display: false,
 					},
 					beginAtZero: true,
+					beforeTickToLabelConversion: (ctx) => {
+						ctx.ticks = [];
+						ctx.ticks.push({ value: min, label: `      ${min} ₽` });
+						ctx.ticks.push({
+							value: minFromInAndOutMax,
+							label: `      ${minFromInAndOutMax} ₽`,
+						});
+						ctx.ticks.push({ value: max, label: `     ${max} ₽` });
+					},
 					position: 'right',
 					min: min,
 					max: max,
 					ticks: {
 						labelOffset: 7,
-						stepSize: max / 2,
 						color: '#000000',
 						font: { weight: '500', size: 16 },
 						padding: 0,
-						callback: function (value) {
-							// Добавляем отступы справа и слева
-							return '      ' + value + ' ₽';
-						},
 					},
 				},
 				x: {

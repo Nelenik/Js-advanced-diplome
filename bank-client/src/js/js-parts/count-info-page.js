@@ -4,23 +4,24 @@ import { request, router } from '..';
 import { Select } from './classes/Select';
 import {
 	BalancePerPeriod,
-	redirectOnExipredSession,
+	checkSessionState,
 	sortByStr,
 	wait,
 	LS,
 	resetPage,
+	createTitleRow,
 } from './actions/_helpers';
 import { Table } from './classes/Table';
 import { setBalanceDynamicChart } from './actions/_charts';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
-import arrowSvg from '!!svg-inline-loader!../../img/arrow.svg';
 
 export function countInfoPage(main, countId) {
+	checkSessionState();
 	resetPage(main);
 
 	const container = el('div.container.count-info', [
-		createTitleRow(),
+		createTitleRow('count-info', 'Просмотр счета', routes.accounts),
 		createPageSkeleton(),
 	]);
 	mount(main, container);
@@ -36,7 +37,7 @@ function fetchHistoryData(countId, dynamicFunc, staticFunc) {
 			if (staticFunc) staticFunc(res);
 		})
 		.catch((err) => {
-			redirectOnExipredSession(err.message);
+			// redirectOnExipredSession(err.message);
 
 			if (/^нет\sданных?/i.test(err.message)) {
 				console.log('Данные по счету отсутствуют');
@@ -50,50 +51,29 @@ function fetchHistoryData(countId, dynamicFunc, staticFunc) {
 		});
 }
 
-// блок заголовка страницы и кнопки назад
-function createTitleRow() {
-	const backLink = el('a.link-reset.blue-btn.count-info__back-link', {
-		href: `${routes.accounts}`,
-	});
-	backLink.innerHTML = `${arrowSvg} Вернуться назад`;
-	backLink.addEventListener('click', (e) => {
-		e.preventDefault();
-		router.navigate(`${routes.accounts}`);
-	});
-
-	return el('div.count-info__title-row', [
-		el('h1.count-info__title.title.title--lg', 'Просмотр счета'),
-		backLink,
-	]);
-}
-
 // скелет данной страницы
 function createPageSkeleton() {
 	const fragment = document.createDocumentFragment();
 	const countNum = el(
-		'h2.count-info__num',
-		{ 'data-count': '' },
+		'h2.count-info__num.count-num',
 		el('div.sk.sk-text.sk-text--75')
 	);
-	const balance = el('p.count-info__balance.balance', { 'data-balance': '' }, [
+	const balance = el('p.count-info__balance.balance', [
 		el('span.sk.sk-text.sk-text--50'),
 		el('span.sk.sk-text.sk-text--50'),
 	]);
 	const balanceRow = el('div.count-info__balance-row', [countNum, balance]);
 
 	const transactionBlock = el(
-		'div.count-info__transaction-wrap.transaction',
-		{ 'data-trans-block': '' },
+		'div.common-block.common-block--grey.count-info__transaction.transaction',
 		el('div.sk.sk-block')
 	);
 	const chartBlock = el(
-		'div.count-info__chart-wrap.chart-block',
-		{ 'data-count-chart': '' },
+		'div.common-block.common-block--white.count-info__chart-block.chart-block',
 		el('div.sk.sk-block')
 	);
 	const historyBlock = el(
-		'div.count-info__history-wrap.history',
-		{ 'data-count-history': '' },
+		'div.common-block.common-block--grey.count-info__history.history',
 		el('div.sk.sk-block')
 	);
 	fragment.append(balanceRow, transactionBlock, chartBlock, historyBlock);
@@ -106,14 +86,14 @@ function createPageSkeleton() {
 const updateBlocks = {
 	updateBalance: (container, res) => {
 		// замена скелета строки с балансом
-		const balance = container.querySelector('[data-balance]');
+		const balance = container.querySelector('.count-info__balance');
 		balance.innerHTML = `
   <span class="balance__text">Баланс</span>
   <span class="balance__value">${res.balance.toFixed(2)} ₽</span>
   `;
 	},
 	updateHistoryBlock: (container, res, href) => {
-		const historyBlock = container.querySelector('[data-count-history]');
+		const historyBlock = container.querySelector('.count-info__history');
 		//замена скелета блока история транзакций
 		const transactionsDublicate = JSON.parse(JSON.stringify(res.transactions)); //делаем копию, т.к. reverse влияет на исходный массив
 		const lastTenTransactions = transactionsDublicate.reverse().slice(0, 10);
@@ -131,7 +111,7 @@ const updateBlocks = {
 		]);
 	},
 	updateChartBlock: (container, res, href) => {
-		const chartBlock = container.querySelector('[data-count-chart]');
+		const chartBlock = container.querySelector('.count-info__chart-block');
 		//замена блока с диаграммой
 		// преобразуем исходный массив с транзакциями в нужную нам структуру и активируем диаграмму
 		const balancePerPeriod = new BalancePerPeriod(res, 5);
@@ -152,12 +132,14 @@ const updateBlocks = {
 	},
 	updateCountNum: (container, res) => {
 		// номер счета
-		const countNum = container.querySelector('[data-count]');
+		const countNum = container.querySelector('.count-info__num');
 		countNum.textContent = `№ ${res.account}`;
 	},
 	updateTransactionBlock: (container, res) => {
 		// форма переводов
-		const transactionBlock = container.querySelector('[data-trans-block]');
+		const transactionBlock = container.querySelector(
+			'.count-info__transaction'
+		);
 		transactionBlock.innerHTML = '';
 		setChildren(transactionBlock, [
 			el('h2.transaction__title.title.title--m', 'Новый перевод'),
@@ -174,7 +156,6 @@ function updateStaticBlocks(res) {
 }
 // функция обновления динамических блоков:баланс, история переводов, динамика транзакций
 function updateDynamicBlocks(res) {
-	console.log(res);
 	const { updateBalance, updateChartBlock, updateHistoryBlock } = updateBlocks;
 	const container = document.querySelector('.count-info');
 	const href = `${routes.balance}?id=${res.account}`;

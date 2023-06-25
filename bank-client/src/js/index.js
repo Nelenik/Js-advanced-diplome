@@ -25,13 +25,17 @@ const main = el('main.page');
 mount(appContainer, main);
 
 // регистрируем роутеры
+
+// авторизация
 router.on(routes.auth, () => {
 	authPage(main);
 	sessionStorage.removeItem('token');
 });
+// список счетов
 router.on(routes.accounts, () => {
 	countsPage(main);
 });
+// инфо о счете
 router.on(routes.countInfo, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	countInfoPage(main, `${id}`);
@@ -39,14 +43,20 @@ router.on(routes.countInfo, (data) => {
 		link.classList.remove('header__link--active')
 	);
 });
+// история баланса
 router.on(routes.balance, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	balancePage(main, `${id}`);
+	Header.mainMenuLinks.forEach((link) =>
+		link.classList.remove('header__link--active')
+	);
 });
+// банки
 router.on(routes.banks, () => {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;
 });
+// обмен валют
 router.on(routes.currencies, () => {
 	main.innerHTML = '';
 	headerInstance.enableMenu = true;

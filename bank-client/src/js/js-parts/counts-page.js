@@ -3,11 +3,7 @@ import { routes } from './actions/_routes';
 import { request, router } from '..';
 import { Card } from './classes/Card';
 import { Select } from './classes/Select';
-import {
-	sortBy,
-	redirectOnExipredSession,
-	resetPage,
-} from './actions/_helpers';
+import { sortBy, checkSessionState, resetPage } from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -16,6 +12,7 @@ const cardsList = el('ul.list-reset.counts-page__counts');
 let countsData = [];
 
 export function countsPage(main) {
+	checkSessionState();
 	resetPage(main);
 
 	const container = el('div.container.counts-page', [
@@ -87,7 +84,7 @@ function createCardsByRequest() {
 			});
 		})
 		.catch((err) => {
-			redirectOnExipredSession(err.message);
+			// redirectOnExipredSession(err.message);
 
 			if (/^нет\sданных?/i.test(err.message)) {
 				console.log('У вас пока нет счетов');

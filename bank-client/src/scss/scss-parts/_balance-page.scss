@@ -1,0 +1,128 @@
+.balance-page {
+
+  &__title-row {
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+
+  &__title{}
+  &__back-link {}
+
+  &__balance-row{
+    display: flex;
+    gap: 40px;
+    justify-content: space-between;
+    margin-bottom: 50px;
+  }
+  &__num {
+    @include resetMg;
+    flex-basis: 40%;
+    /* 367px/1329 */
+  }
+
+  &__balance {
+    @include resetMg;
+    flex-basis: 15.124153%;
+    /* 201/1329 */
+  }
+  &__chart-block {
+    min-height: 288px;
+    margin-bottom: 50px;
+  }
+  &__history-block {
+    min-height: 345px;
+  }
+}
+
+.dynamic-chart {
+  padding: 25px 100px 20px;
+
+  &__wrap {
+    flex-grow: 1;
+  }
+}
+
+.ratio-chart {
+  padding: 25px 100px 20px;
+
+  &__wrap {
+    flex-grow: 1;
+  }
+}
+
+// pagination block
+.pagination {
+  min-height: 40px;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+
+  a {
+    text-decoration: none;
+    outline: none;
+    color: inherit;
+  }
+
+  &__wrapper {
+  }
+
+  &__btn {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-inline: 5px;
+    line-height: 150%;
+    border: 1px solid #eaeaea;
+    border-radius: 7px;
+    height: 100%;
+    &--current {}
+
+    &:focus {
+      border-color: rgb(118, 155, 210);
+    }
+  }
+
+  &__ellipsis {
+    display: inline-block;
+    padding: 7px;
+    line-height: 150%;
+    // border: 1px solid #eaeaea;
+    // border-radius: 7px;
+    height: 100%;
+  }
+
+  &__controls {
+    display: flex;
+    gap: 10px;
+    &--left {}
+
+    &--right {}
+  }
+
+  &__control {
+    display: inline-block;
+    padding: 5px 10px;
+    line-height: 150%;
+    border: 1px solid #eaeaea;
+    border-radius: 7px;
+    height: 100%;
+    &--prev {}
+
+    &--next {}
+
+    &--start {}
+
+    &--end {}
+
+    &--disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    &:focus {
+      border-color: rgb(118, 155, 210);
+    }
+  }
+}

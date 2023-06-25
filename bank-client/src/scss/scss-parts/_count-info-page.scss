@@ -35,25 +35,17 @@
     /* 201/1329 */
   }
 
-  &__transaction-wrap {
+    &__transaction {
+    }
 
-  }
+    &__chart-block{
+    }
 
-  &__chart-wrap {
-    padding: 25px 50px;
-    min-height: 288px;
-    border-radius: 50px;
-    background-color: $white;
-    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.25);
-  }
+    &__history {
 
-  &__history-wrap {
-    grid-column: span 2;
-    padding: 25px 50px;
-    min-height: 208px;
-    border-radius: 50px;
-    background-color: $gray-7;
-  }
+      grid-column: span 2;
+    }
+
 }
 
 .balance {
@@ -63,23 +55,23 @@
 }
 
 .transaction {
-  position: relative;
   padding: 25px 50px;
   min-height: 288px;
-  border-radius: 50px;
-  background-color: $gray-7;
 
   &__title {}
 
   &__select-field {}
 
   &__amount-field {}
+
   &__sbmt-btn {}
 }
 
 .history {
-  position: relative;
-  &__title{}
+  padding: 25px 50px;
+  min-height: 208px;
+
+  &__title {}
 
   &__link {
     &::before {
@@ -91,10 +83,10 @@
 }
 
 .chart-block {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  &__title{}
+  padding: 25px 50px;
+  min-height: 288px;
+
+  &__title {}
 
   &__link {
 
@@ -111,7 +103,8 @@
       outline: 1px solid red;
     }
   }
-  &__canvas-wrap{
+
+  &__canvas-wrap {
     flex-grow: 1;
   }
 }

@@ -1,7 +1,21 @@
 import { router, headerInstance } from '../..';
 import { routes } from './_routes';
+import { el } from 'redom';
 
-/*функция перенаправления на главную страницу при истекшей сессии*/
+// import of svg
+import arrowSvg from '!!svg-inline-loader!../../../img/arrow.svg';
+
+/*******************************************************/
+/*функция проверяет наличие токена с session storage и перенаправляет на страницу авторизации если токена нет*/
+export function checkSessionState() {
+	const token = sessionStorage.getItem('token');
+	if (!token) {
+		alert('Время сессии истекло!');
+		router.navigate(routes.auth);
+	}
+}
+/*******************************************************/
+/*функция перенаправления на главную страницу при истекшей сессии использвать при обработке ошибок. эту ошибку выбрасывает ServerApi.getToken()*/
 export function redirectOnExipredSession(message) {
 	if (/^session\sexpired?/i.test(message)) {
 		console.log(message);
@@ -32,6 +46,28 @@ export function getIdFromQueryStr(queryStr) {
 	const match = queryStr.match(/id=(.*)/);
 	if (match) return match[1];
 }
+/*******************************************************/
+/*функция создания строки с заголовком и кнопкой назад на страницах "посмотр счета" и "история баланса", т.к. они одинаковые на этих 2 страницах, принимает: pageClass(имя блока к которому относится, в нашем случае блоком является имя страницы), pageTitle(строка, название страницы), backRoute(путь для ссылки назад*/
+export function createTitleRow(pageClass, pageTitle, backRoute) {
+	const backLink = el(
+		`a.link-reset.blue-btn.blue-btn--back.${pageClass}__back-link`,
+		{
+			href: `${backRoute}`,
+		}
+	);
+	backLink.innerHTML = `${arrowSvg} Вернуться назад`;
+	backLink.addEventListener('click', (e) => {
+		e.preventDefault();
+		router.navigate(`${backRoute}`);
+	});
+
+	return el(`div.${pageClass}__title-row`, [
+		el(`h1.${pageClass}__title.title.title--lg`, `${pageTitle}`),
+		backLink,
+	]);
+}
+/*******************************************************/
+
 /*******************************************************/
 
 /*пользовательская функция метода массивов sort(), сортирует по заданной подстроке = arr.sort(sortByStr('str')*/
