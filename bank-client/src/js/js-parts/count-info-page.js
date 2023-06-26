@@ -98,15 +98,17 @@ const updateBlocks = {
 		const transactionsDublicate = JSON.parse(JSON.stringify(res.transactions)); //делаем копию, т.к. reverse влияет на исходный массив
 		const lastTenTransactions = transactionsDublicate.reverse().slice(0, 10);
 		const historyTable = new Table(res.account, lastTenTransactions);
+		const historyLink = el(
+			'a.history__link.link-reset',
+			{ href: href },
+			'История переводов'
+		);
+		historyLink.addEventListener('click', (e) => {
+			e.preventDefault();
+			router.navigate(href);
+		});
 		setChildren(historyBlock, [
-			el(
-				'h2.history__title.title.title--m',
-				el(
-					'a.history__link.link-reset',
-					{ href: href, 'data-navigo': '' },
-					'История переводов'
-				)
-			),
+			el('h2.history__title.title.title--m', historyLink),
 			historyTable.table,
 		]);
 	},
@@ -117,15 +119,17 @@ const updateBlocks = {
 		const balancePerPeriod = new BalancePerPeriod(res, 5);
 		const transPerMonth = balancePerPeriod.arrangeBalanceData();
 		const canvas = el('canvas', { id: 'countInfoBalanceChart' });
+		const chartBlockLink = el(
+			'a.chart-block__link.link-reset',
+			{ href: href },
+			'Динамика баланса'
+		);
+		chartBlockLink.addEventListener('click', (e) => {
+			e.preventDefault();
+			router.navigate(href);
+		});
 		setChildren(chartBlock, [
-			el(
-				'h2.chart-block__title.title.title--m',
-				el(
-					'a.chart-block__link.link-reset',
-					{ href: href, 'data-navigo': '' },
-					'Динамика баланса'
-				)
-			),
+			el('h2.chart-block__title.title.title--m', chartBlockLink),
 			el('div.chart-block__canvas-wrap.chart', canvas),
 		]);
 		setBalanceDynamicChart(canvas, transPerMonth);

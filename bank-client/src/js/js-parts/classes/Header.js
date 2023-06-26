@@ -5,10 +5,13 @@ import { router } from '../../index.js';
 import logo from '!!svg-inline-loader!../../../img/logo.svg';
 
 /*
-инициализация new Header({
+инициализация: new Header({
   appContainer: el (контейнер куда вставляем элемент),
   enableMenu: def=false (указываем нужно ли отображать меню)
 })
+методы:
+-instance.switchActiveLinkState(pathName) - переключает активное состояние ссылки, получает в качетсве аргумента pathName, который можно указать явно если известен или взять из window.location.pathname;
+-instance.removeActiveState - при необходимости снимает активное состояние у всех ссылок
 */
 export class Header {
 	static mainMenuLinks = [];
@@ -31,6 +34,13 @@ export class Header {
 		mount(this.header, this.container);
 		mount(this.appContainer, this.header);
 		this.enableMenu = enableMenu;
+
+		window.addEventListener('popstate', () => {
+			this.switchActiveLinkState(window.location.pathname);
+		});
+		window.addEventListener('load', () => {
+			this.switchActiveLinkState(window.location.pathname);
+		});
 	}
 
 	createNav() {
@@ -43,31 +53,32 @@ export class Header {
 				item.text
 			);
 			Header.mainMenuLinks.push(link);
-
-			window.addEventListener('load', () => {
-				this.switchActiveLink(link, item.route);
-			});
-			window.addEventListener('popstate', () => {
-				this.switchActiveLink(link, item.route);
-			});
-			link.addEventListener('click', (e) => {
-				e.preventDefault();
+			link.addEventListener('click', (el) => {
+				el.preventDefault();
 				router.navigate(item.route);
-				this.switchActiveLink(link, item.route);
+				this.switchActiveLinkState(item.route);
 			});
 			mount(this.nav, link);
 		});
 		mount(this.container, this.nav);
 	}
 	// переключаем стили активной ссылки
-	switchActiveLink(link, route) {
-		const isExit = link.textContent === 'Выйти';
-		if (window.location.pathname === route && !isExit) {
-			Header.mainMenuLinks.forEach((el) =>
-				el.classList.remove('header__link--active')
-			);
-			link.classList.add('header__link--active');
-		}
+	switchActiveLinkState(pathName) {
+		this.removeActiveState();
+		if (pathName === '/') return;
+		const regexp = new RegExp('^' + pathName + '$');
+		const link = Header.mainMenuLinks.find((item) => {
+			const hrefPathname = new URL(item.href).pathname;
+			if (regexp.test(hrefPathname)) return item;
+		});
+		if (link) link.classList.add('header__link--active');
+		// }
+	}
+
+	removeActiveState() {
+		Header.mainMenuLinks.forEach((el) =>
+			el.classList.remove('header__link--active')
+		);
 	}
 
 	set enableMenu(value) {

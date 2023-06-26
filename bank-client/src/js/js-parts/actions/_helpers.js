@@ -59,6 +59,7 @@ export function createTitleRow(pageClass, pageTitle, backRoute) {
 	backLink.addEventListener('click', (e) => {
 		e.preventDefault();
 		router.navigate(`${backRoute}`);
+		headerInstance.switchActiveLinkState(backRoute);
 	});
 
 	return el(`div.${pageClass}__title-row`, [
@@ -150,9 +151,9 @@ export class BalancePerPeriod {
 	}
 	// получаем дату с которой начинаем отсчет, например 6/12 мес назад
 	getStartDate() {
-		const nowDate = new Date();
-		let startMonth = nowDate.getMonth() - this.monthesToSubtract;
-		let startYear = nowDate.getFullYear();
+		this.nowDate = new Date();
+		let startMonth = this.nowDate.getMonth() - this.monthesToSubtract;
+		let startYear = this.nowDate.getFullYear();
 		if (startMonth < 0) {
 			const yearToSubtract = Math.ceil(Math.abs(startMonth) / 12);
 			startYear = startYear - yearToSubtract;
@@ -160,48 +161,63 @@ export class BalancePerPeriod {
 		}
 		this.startDate = new Date(startYear, startMonth);
 	}
-	// вычленяем из исходного массива c транзациями инетерсующий нас период и распределяем элементы по месяцам
-	divideTransPerMonth() {
-		const searchIndex = this.transArray.findIndex(
-			(el) => new Date(el.date) >= this.startDate
-		);
-		const newTransArr = this.transArray.slice(searchIndex);
-		// const transByMonths = {};
+	//   создаем базовую структуру конечного массива с данными
+	getBaseStructureOfFinalDataArr() {
 		const transByMonths = [];
-		for (let item of newTransArr) {
-			const transDate = new Date(item.date);
-			const monthName = this.monthNames[transDate.getMonth()];
-			const year = transDate.getFullYear();
-			let checkArray = transByMonths.find((item) => {
-				return item.month === monthName && item.year === year;
-			});
+		const beginFrom = new Date(this.startDate);
+		while (beginFrom < this.nowDate) {
+			const monthNum = beginFrom.getMonth();
+			const monthName = this.monthNames[monthNum];
+			const year = beginFrom.getFullYear();
+			const checkArray = transByMonths.find(
+				(item) => item.month === monthName && item.year === year
+			);
 			if (!checkArray) {
 				transByMonths.push({
 					month: monthName,
 					year: year,
-					transactions: [item],
+					transactions: [],
 				});
-			} else {
-				checkArray.transactions.push(item);
 			}
+			beginFrom.setMonth(monthNum + 1);
 		}
 		return transByMonths;
+	}
+	// вычленяем из исходного массива c транзациями инетерсующий нас период и распределяем элементы по месяцам
+	divideTransPerMonth() {
+		const finalArray = this.getBaseStructureOfFinalDataArr();
+		const searchIndex = this.transArray.findIndex(
+			(el) => new Date(el.date) >= this.startDate
+		);
+		const newTransArr = this.transArray.slice(searchIndex);
+		for (let item of newTransArr) {
+			const transDate = new Date(item.date);
+			const transMonthName = this.monthNames[transDate.getMonth()];
+			const transYear = transDate.getFullYear();
+			const itemToChangeInd = finalArray.findIndex(
+				(item) => item.month === transMonthName && item.year === transYear
+			);
+			finalArray[itemToChangeInd].transactions.push(item);
+		}
+		return finalArray;
 	}
 	// считаем сумму входящих, исходящих транзакций, а также их разницу. нужно для вычисления баланаса на конец месяца
 	calculateBalancePerMonth(monthArr) {
 		let incoming = 0;
 		let outgoing = 0;
-		monthArr.forEach((item) => {
-			if (item.to === this.countId) {
-				incoming += item.amount;
-			}
-			if (item.from === this.countId) {
-				outgoing += item.amount;
-			}
-		});
+		if (monthArr.length > 0) {
+			monthArr.forEach((item) => {
+				if (item.to === this.countId) {
+					incoming += item.amount;
+				}
+				if (item.from === this.countId) {
+					outgoing += item.amount;
+				}
+			});
+		}
+
 		return { incoming, outgoing };
 	}
-
 	arrangeBalanceData() {
 		const transPerMonth = this.divideTransPerMonth();
 		let toSubtractDifference = 0;

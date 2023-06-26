@@ -39,17 +39,17 @@ router.on(routes.accounts, () => {
 router.on(routes.countInfo, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	countInfoPage(main, `${id}`);
-	Header.mainMenuLinks.forEach((link) =>
-		link.classList.remove('header__link--active')
-	);
+	// Header.mainMenuLinks.forEach((link) =>
+	// 	link.classList.remove('header__link--active')
+	// );
 });
 // история баланса
 router.on(routes.balance, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	balancePage(main, `${id}`);
-	Header.mainMenuLinks.forEach((link) =>
-		link.classList.remove('header__link--active')
-	);
+	// Header.mainMenuLinks.forEach((link) =>
+	// 	link.classList.remove('header__link--active')
+	// );
 });
 // банки
 router.on(routes.banks, () => {

@@ -1,6 +1,6 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from '../actions/_routes';
-import { router } from '../..';
+import { router, headerInstance } from '../..';
 export class Card {
 	constructor() {
 		this.card = el('li.card');
@@ -55,6 +55,7 @@ export class Card {
 		this.cardLink.addEventListener('click', (e) => {
 			e.preventDefault();
 			router.navigate(href);
+			headerInstance.switchActiveLinkState(routes.countInfo);
 		});
 	}
 
