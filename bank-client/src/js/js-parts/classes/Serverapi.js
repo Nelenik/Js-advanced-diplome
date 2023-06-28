@@ -66,4 +66,16 @@ export class ServerApi {
 	async sendTransfer(bodyObj) {
 		return this.post('/transfer-funds', bodyObj, true);
 	}
+	/*getAllCurrencies(): GET-Метод отвечает массивом со списком кодов всех используемых бекэндом валют на данный момент*/
+	async getAllCurrencies() {
+		return this.get('/all-currencies');
+	}
+	/*getUserCurrencies(): Получает инфомрацию о валютных счетах пользователя, отправляя GET-запрос. нужен токен авторизации */
+	async getUserCurrencies() {
+		return this.get('/currencies', true);
+	}
+	/*convert(bodyObj): Отправляет POST-запрос на конвертацию между валютными счетами пользователя. нужен токен авторизации */
+	async convert(bodyObj) {
+		return this.post('/currency-buy', bodyObj, true);
+	}
 }

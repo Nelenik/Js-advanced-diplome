@@ -1,0 +1,72 @@
+// * {
+//   outline: 1px solid red;
+// }
+.exchange {
+
+  &__title {
+
+  }
+
+  &__blocks-wrap{
+    display: grid;
+    grid-template-columns: 43.880597% 52.462687%;
+    grid-template-rows: minmax(411px, auto) minmax(273px, auto);
+    row-gap: 44px;
+    column-gap: 50px;
+  }
+  &__user-currencies {}
+  &__course-dynamic {
+    grid-row: span 2;
+  }
+  &__converter{}
+}
+
+.user-currencies {
+  padding: 50px;
+  &__title {
+
+  }
+
+  &__list {}
+
+  &__item {}
+
+  &__code {}
+  &__amount {}
+}
+
+.course-dynamic{
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  max-height: 800px;
+  padding: 50px;
+  &__title {}
+  &__list {
+    flex-grow: 1;
+    overflow-y: auto;
+    -ms-overflow-style: none;//ms&edge
+    scrollbar-width: none;//firefox
+    &::-webkit-scrollbar {
+      display: none;//webkit
+    }
+  }
+  &__item {
+
+    &::after {}
+
+    &--up {
+      .course-dynamic__rate {
+        color: green;
+      }
+      &::after {}
+    }
+
+    &--down {
+      .course-dynamic__rate {
+        color: red;
+      }
+      &::after {}
+    }
+  }
+}

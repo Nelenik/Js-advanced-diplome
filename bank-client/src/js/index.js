@@ -10,6 +10,7 @@ import { authPage } from './js-parts/auth-page'; //страница автори
 import { countsPage } from './js-parts/counts-page'; //все счета
 import { countInfoPage } from './js-parts/count-info-page'; //информация об одном счете
 import { balancePage } from './js-parts/balance-page'; //информация о истории баланса
+import { currenciesPage } from './js-parts/currencies-page'; //страница по валютным счетам
 
 export const router = new Navigo(routes.auth);
 export const request = new ServerApi('http://localhost:3000');
@@ -39,17 +40,11 @@ router.on(routes.accounts, () => {
 router.on(routes.countInfo, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	countInfoPage(main, `${id}`);
-	// Header.mainMenuLinks.forEach((link) =>
-	// 	link.classList.remove('header__link--active')
-	// );
 });
 // история баланса
 router.on(routes.balance, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
 	balancePage(main, `${id}`);
-	// Header.mainMenuLinks.forEach((link) =>
-	// 	link.classList.remove('header__link--active')
-	// );
 });
 // банки
 router.on(routes.banks, () => {
@@ -58,7 +53,6 @@ router.on(routes.banks, () => {
 });
 // обмен валют
 router.on(routes.currencies, () => {
-	main.innerHTML = '';
-	headerInstance.enableMenu = true;
+	currenciesPage(main);
 });
 router.resolve();
