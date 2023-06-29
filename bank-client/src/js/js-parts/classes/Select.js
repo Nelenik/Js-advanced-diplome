@@ -271,7 +271,6 @@ export class Select {
 				this.prevActive,
 				this.prevActive.nextElementSibling.textContent
 			);
-			console.log(this.prevActive.nextElementSibling.textContent);
 		}
 	}
 

@@ -1,0 +1,15 @@
+.banks {
+
+  &__title{}
+
+  &__map-block{
+    position: relative;
+    width: 100%;
+    min-height: 728px;
+  }
+
+  &__map-plug{
+    position: absolute;
+    inset: 0;
+  }
+}

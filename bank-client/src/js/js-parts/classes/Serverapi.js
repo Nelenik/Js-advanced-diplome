@@ -78,4 +78,8 @@ export class ServerApi {
 	async convert(bodyObj) {
 		return this.post('/currency-buy', bodyObj, true);
 	}
+
+	async getBanks() {
+		return this.get('/banks');
+	}
 }

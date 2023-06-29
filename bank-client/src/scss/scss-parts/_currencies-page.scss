@@ -70,3 +70,19 @@
     }
   }
 }
+
+.converter {
+  padding: 50px;
+  &__title{}
+  &__form{}
+  &__select-label{}
+  &__select__text{}
+  &__select-from{}
+
+  &__select-to{}
+
+  &__summ-label{}
+  &__summ-input{}
+
+  &__convert-btn{}
+}

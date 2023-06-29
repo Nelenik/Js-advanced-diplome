@@ -1,6 +1,7 @@
 import { router, headerInstance } from '../..';
 import { routes } from './_routes';
 import { el } from 'redom';
+import { curencyRateSocket } from '../currencies-page';
 
 // import of svg
 import arrowSvg from '!!svg-inline-loader!../../../img/arrow.svg';
@@ -39,6 +40,7 @@ export function resetPage(main, turnOnMenu = true) {
 	const timeoutId = LS.get(key);
 	if (timeoutId) clearTimeout(timeoutId);
 	LS.remove(key);
+	if (curencyRateSocket) curencyRateSocket.close();
 }
 /*******************************************************/
 // получаем id из квери запроса, применяется на странице "просмотр счета" и "история баланса"

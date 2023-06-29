@@ -169,4 +169,7 @@ module.exports = {
 			new CssMinimizerPlugin(),
 		],
 	},
+	externals: {
+		ymaps3: 'ymaps3',
+	},
 };

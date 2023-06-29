@@ -11,6 +11,7 @@ import { countsPage } from './js-parts/counts-page'; //все счета
 import { countInfoPage } from './js-parts/count-info-page'; //информация об одном счете
 import { balancePage } from './js-parts/balance-page'; //информация о истории баланса
 import { currenciesPage } from './js-parts/currencies-page'; //страница по валютным счетам
+import { banksPage } from './js-parts/banks-page'; //страница с банками
 
 export const router = new Navigo(routes.auth);
 export const request = new ServerApi('http://localhost:3000');
@@ -48,8 +49,7 @@ router.on(routes.balance, (data) => {
 });
 // банки
 router.on(routes.banks, () => {
-	main.innerHTML = '';
-	headerInstance.enableMenu = true;
+	banksPage(main);
 });
 // обмен валют
 router.on(routes.currencies, () => {

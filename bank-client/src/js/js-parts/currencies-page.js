@@ -5,7 +5,7 @@ import { checkSessionState, resetPage, LS } from './actions/_helpers';
 import { Select } from './classes/Select';
 
 // let currencyCache = {};
-
+export let curencyRateSocket;
 export function currenciesPage(main) {
 	checkSessionState();
 	resetPage(main);
@@ -16,9 +16,11 @@ export function currenciesPage(main) {
 	]);
 	mount(main, container);
 
-	updateUserCurrencies();
+	request.getUserCurrencies().then((res) => {
+		updateUserCurrencies(res);
+	});
 	updateCourseDynamic();
-	request.getAllCurrencies().then((res) => console.log(res));
+	updateConverter();
 }
 // скелетон страницы "валютный обмен"
 function createCurenciesSkeleton() {
@@ -32,32 +34,32 @@ function createCurenciesSkeleton() {
 		el('div.sk.sk-block')
 	);
 	const convertForm = el(
-		'div.common-block.common-block--white.exchange__converter',
+		'div.common-block.common-block--white.exchange__converter.converter',
 		el('div.sk.sk-block')
 	);
 	exchangeBlocks.append(userCurrencies, courseDynamic, convertForm);
 	return exchangeBlocks;
 }
-// обновление блока "ваши валюты" полученными данными
-function updateUserCurrencies() {
+/************обновление блока "ваши валюты" полученными данными***********/
+function updateUserCurrencies(res) {
 	const userCurrenciesBlock = document.querySelector(
 		'.exchange__user-currencies'
 	);
-	request.getUserCurrencies().then((res) => {
-		const currencyObjects = Object.values(res);
-		const currenciesElems = currencyObjects.map((item) => {
-			return el('li.user-currencies__item', [
-				el('span.user-currecies__code', item.code),
-				el('span.user-currencies__amount', `${item.amount}`),
-			]);
-		});
-		setChildren(userCurrenciesBlock, [
-			el('h2.user-currencies__title.title.title--m', 'Ваши валюты'),
-			el('ul.user-currencies__list.list-reset', [...currenciesElems]),
+	// request.getUserCurrencies().then((res) => {
+	const currencyObjects = Object.values(res);
+	const currenciesElems = currencyObjects.map((item) => {
+		return el('li.user-currencies__item', [
+			el('span.user-currecies__code', item.code),
+			el('span.user-currencies__amount', `${item.amount}`),
 		]);
 	});
+	setChildren(userCurrenciesBlock, [
+		el('h2.user-currencies__title.title.title--m', 'Ваши валюты'),
+		el('ul.user-currencies__list.list-reset', [...currenciesElems]),
+	]);
+	// });
 }
-// обновление блока "изменение курсов в реальном времени", на базе данных вебсокета
+/************обновление блока "изменение курсов в реальном времени", на базе данных вебсокета*******************/
 function updateCourseDynamic() {
 	const courseDynamicBlock = document.querySelector(
 		'.exchange__course-dynamic'
@@ -67,8 +69,8 @@ function updateCourseDynamic() {
 	const courseDynamicList = el('ul.course-dynamic__list.list-reset', [
 		...Object.values(itemsFromStorageObj),
 	]);
-	const socket = new WebSocket('ws://localhost:3000/currency-feed');
-	socket.addEventListener('open', (e) => {
+	curencyRateSocket = new WebSocket('ws://localhost:3000/currency-feed');
+	curencyRateSocket.addEventListener('open', (e) => {
 		setChildren(courseDynamicBlock, [
 			el(
 				'h2.course-dynamic__title.title.title--m',
@@ -77,7 +79,7 @@ function updateCourseDynamic() {
 			courseDynamicList,
 		]);
 	});
-	socket.addEventListener('message', (e) => {
+	curencyRateSocket.addEventListener('message', (e) => {
 		const data = JSON.parse(e.data);
 		if (data.type === 'EXCHANGE_RATE_CHANGE') {
 			const classModifier =
@@ -129,4 +131,87 @@ function itemClassName(upDownModifier) {
 			? `course-dynamic__item course-dynamic__item--${upDownModifier}`
 			: `course-dynamic__item `;
 	return itemClassName;
+}
+
+/*****************обновление блока "обмен валюты"***********/
+async function updateConverter() {
+	const converterBlock = document.querySelector('.exchange__converter');
+	const allCurrencies = await request.getAllCurrencies();
+	const fromSelectContent = allCurrencies.map((item) => {
+		return {
+			text: `${item}`,
+			value: `${item}`,
+			name: 'convertFrom',
+			selected: item === 'RUB' ? true : false,
+		};
+	});
+	const toSelectContent = allCurrencies.map((item) => {
+		return {
+			text: `${item}`,
+			value: `${item}`,
+			name: 'convertFrom',
+			selected: item === 'USD' ? true : false,
+		};
+	});
+	const fromSelect = new Select({
+		selectContent: fromSelectContent,
+		additionalClass: 'converter__select-from',
+	});
+	const toSelect = new Select({
+		selectContent: toSelectContent,
+		additionalClass: 'converter__select-to',
+	});
+
+	const converterForm = el('form.converter__form', { name: 'converterForm' }, [
+		el('label.converter__select-label', [
+			el('span.converter__select-text', 'Из'),
+			fromSelect.select,
+		]),
+		el('label.converter__select-label', [
+			el('span.converter__select-text', 'в'),
+			toSelect.select,
+		]),
+		el('label.converter__summ-label', [
+			'Сумма',
+			el('input.converter__summ-input', {
+				type: 'text',
+				name: 'converterSumm',
+			}),
+		]),
+		el(
+			'button.converter__convert-btn.btn-reset.blue-btn',
+			{ type: 'submit' },
+			'Обменять'
+		),
+	]);
+
+	setChildren(converterBlock, [
+		el('h2.converter__title.title.title--m', 'Обмен валюты'),
+		converterForm,
+	]);
+	converterForm.addEventListener(
+		'submit',
+		convertFormHandler(fromSelect, toSelect)
+	);
+}
+// обработчик формы конвертации
+function convertFormHandler(selectFrom, selectTo) {
+	return function (e) {
+		e.preventDefault();
+		if (document.activeElement == e.target.selectTriggerBtn) return;
+		const objToPost = {
+			from: selectFrom.selectValue,
+			to: selectTo.selectValue,
+			amount: e.target.converterSumm.value,
+		};
+		request
+			.convert(objToPost)
+			.then((res) => updateUserCurrencies(res))
+			.catch((err) => {
+				console.log(err);
+			})
+			.finally(() => {
+				e.target.reset();
+			});
+	};
 }
