@@ -1,5 +1,4 @@
 import { el, mount, setChildren } from 'redom';
-import { routes } from './actions/_routes';
 import { request } from '..';
 import { checkSessionState, resetPage, LS } from './actions/_helpers';
 import { Select } from './classes/Select';
@@ -70,7 +69,7 @@ function updateCourseDynamic() {
 		...Object.values(itemsFromStorageObj),
 	]);
 	curencyRateSocket = new WebSocket('ws://localhost:3000/currency-feed');
-	curencyRateSocket.addEventListener('open', (e) => {
+	curencyRateSocket.addEventListener('open', () => {
 		setChildren(courseDynamicBlock, [
 			el(
 				'h2.course-dynamic__title.title.title--m',

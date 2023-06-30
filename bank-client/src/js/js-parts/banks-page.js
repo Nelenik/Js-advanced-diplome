@@ -1,11 +1,11 @@
-import { el, mount, setChildren } from 'redom';
-import { routes } from './actions/_routes';
+import { el, mount } from 'redom';
 import { request } from '..';
-import { checkSessionState, resetPage, LS } from './actions/_helpers';
-import mapPlug from '../../img/map-plug.jpg';
-console.log(mapPlug);
+import { checkSessionState, resetPage } from './actions/_helpers';
+import * as ymaps3 from 'ymaps3';
+import mapPlug from '../../img/map-plug.png';
+import markSvg from '!!svg-inline-loader!../../img/mark.svg';
 
-export function banksPage(main) {
+export async function banksPage(main) {
 	checkSessionState();
 	resetPage(main);
 
@@ -23,7 +23,28 @@ export function banksPage(main) {
 	]);
 	mount(main, container);
 
-	request.getBanks().then((res) => {
-		console.log(res);
+	await ymaps3.ready;
+	const banksCoords = await request.getBanks();
+	const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapMarker } =
+		ymaps3;
+	const POINTS = banksCoords.map((item) => {
+		const img = el('div.map-mark', { title: 'Coin' });
+		img.innerHTML = markSvg;
+		return new YMapMarker(
+			{
+				coordinates: [item.lon, item.lat],
+			},
+			img
+		);
 	});
+	new YMap(
+		mapBlock,
+		{
+			location: {
+				center: [37.61019, 55.74933],
+				zoom: 12,
+			},
+		},
+		[new YMapDefaultSchemeLayer(), new YMapDefaultFeaturesLayer(), ...POINTS]
+	);
 }

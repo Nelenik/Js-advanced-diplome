@@ -5,11 +5,20 @@
   &__map-block{
     position: relative;
     width: 100%;
-    min-height: 728px;
+    height: 728px;
+    // min-height: 728px;
   }
 
   &__map-plug{
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+.map-mark {
+  svg {
+    width: 30px;
+    height: 39px;
   }
 }
