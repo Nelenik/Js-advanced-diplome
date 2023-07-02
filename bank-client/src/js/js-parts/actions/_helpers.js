@@ -1,6 +1,6 @@
 import { router, headerInstance } from '../..';
 import { routes } from './_routes';
-import { el } from 'redom';
+import { el, mount, unmount } from 'redom';
 import { curencyRateSocket } from '../currencies-page';
 
 // import of svg
@@ -271,3 +271,105 @@ export class LS {
 	}
 }
 /*******************************************************/
+/*Класс Validate представляет собой инструмент для валидации значений полей ввода. Он имеет следующие особенности:
+
+При инициализации класса Validate передается элемент ввода input и правила rules в качестве параметров(new Validate(input, rules))
+Правила валидации представлены в форме массива объектов:
+[
+  {
+    name: 'rule name',
+    message: 'error messagre',
+    messageType: 'error'/'warning',
+    validation: (value) => {return (true, если значение проходит валидацию, и false в противном случае)}
+  },
+]
+
+Методы:
+- По умолчанию, в классе Validate заданы некоторые базовые правила defRules.
+При инициализации класса, переданные правила объединяются с базовыми правилами с помощью метода assignRules().
+- Метод validate() выполняет валидацию значения поля ввода с использованием заданных правил. Если значение не проходит валидацию по одному из правил, устанавливается флаг success в false и выводится соответствующее сообщение об ошибке с помощью метода showMessage().
+- Метод showMessage() отображает сообщение об ошибке под полем ввода.
+- Метод removeMessage() удаляет отображаемое сообщение об ошибке.
+Св-ва:
+- геттер success возвращает статус валидации
+*/
+export class Validate {
+	defRules = [
+		{
+			name: 'required',
+			message: 'This field is required',
+			messageType: 'error',
+			validation: (value) => {
+				return value.trim() !== '';
+			},
+		},
+		{
+			name: 'number',
+			message: 'Introduced value must be number',
+			messageType: 'error',
+			validation: (value) => {
+				return isFinite(value);
+			},
+		},
+	];
+
+	constructor(input, rules) {
+		this.success = false;
+		this.field = input;
+		this.fieldWrapper = input.parentElement;
+		this.assignRules(rules);
+		this.messageEl = null;
+		this.messageType = null;
+		// this.validate();
+	}
+
+	set success(value) {
+		this._success = value;
+		if (value) this.removeMessage();
+	}
+	get success() {
+		return this._success;
+	}
+
+	assignRules(rules) {
+		if (rules) {
+			this.rules = rules.map((item) => {
+				const findRes = this.defRules.find(
+					(defRule) => defRule.name === item.name
+				);
+				return findRes ? Object.assign(findRes, item) : item;
+			});
+		}
+	}
+
+	validate() {
+		let isValid = true;
+		for (const rule of this.rules) {
+			isValid = rule.validation(this.field.value);
+			if (!isValid) {
+				this.showMessage(rule.message, rule.messageType);
+				break;
+			}
+		}
+		this.success = isValid;
+	}
+
+	showMessage(message, ruleType) {
+		this.removeMessage();
+		this.messageType = ruleType;
+		this.messageEl = el(`p.${this.messageType}__message`, message);
+		// console.log(this.messageEl)
+		this.fieldWrapper.classList.add(this.messageType);
+		mount(this.fieldWrapper, this.messageEl);
+	}
+	removeMessage() {
+		if (this.messageType) {
+			this.fieldWrapper.classList.remove(this.messageType);
+			this.messageType = null;
+		}
+		if (this.messageEl) {
+			unmount(this.fieldWrapper, this.messageEl);
+			this.messageEl = null;
+		}
+	}
+}

@@ -1,7 +1,7 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from './actions/_routes';
 import { request, router } from '..';
-import { resetPage } from './actions/_helpers';
+import { resetPage, Validate } from './actions/_helpers';
 import eyeSvg from '!!svg-inline-loader!../../img/eye.svg';
 import eyeCrossedSvg from '!!svg-inline-loader!../../img/eye-crossed.svg';
 
@@ -18,6 +18,9 @@ export function authPage(main) {
 		)
 	);
 }
+// переменные экземпляров валидации полей логин и пароль
+let loginValid;
+let passValid;
 
 function createForm() {
 	const form = el('form.auth-page__form.auth-form', {
@@ -64,6 +67,9 @@ function createForm() {
 		'Войти'
 	);
 	setChildren(form, [...fields, sbmtBtn]);
+	// инициализируем валидацию полей формы авторизации
+	loginValid = new Validate(form.authLogin);
+	passValid = new Validate(form.authPassword);
 
 	form.addEventListener('submit', authFormHandler);
 	return form;
@@ -79,6 +85,7 @@ function switchPasswordVisibility(input) {
 	};
 }
 // обработчик сабмита формы авторизации
+
 function authFormHandler(e) {
 	e.preventDefault();
 	const target = e.currentTarget;
@@ -94,8 +101,15 @@ function authFormHandler(e) {
 				.classList.add('header__link--active');
 		})
 		.catch((err) => {
-			let message = err.message;
-			if (message !== 'Invalid password' || message !== 'No such user')
-				throw err;
+			loginValid.success = true;
+			passValid.success = true;
+			const loginRegexp = /^No\ssuch\suser$/;
+			const passwordRegexp = /^Invalid\spassword$/;
+			if (loginRegexp.test(err.message)) {
+				loginValid.showMessage('Неверный логин', 'error');
+			}
+			if (passwordRegexp.test(err.message)) {
+				passValid.showMessage('Неверный пароль', 'error');
+			}
 		});
 }

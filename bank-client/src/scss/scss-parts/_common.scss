@@ -10,6 +10,24 @@
 .page {
   flex-grow: 1;
 }
+// блок с системными сообщениями
+.message-block {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  width: min(100%, 400px);
+  max-height: 100vh;
+  overflow-y: auto;
+  &__list {
+    height: 100%;
+  }
+
+  &__item{}
+
+  &__close-btn{}
+}
 
 .container {
   @include container(1370px, 15px);
@@ -96,4 +114,20 @@
 .chart {
   position: relative;
   width: 100%;
+}
+
+.error {
+  position: relative;
+  --error-color: #EB5757;
+  &__message {
+    position: absolute;
+    bottom: 105%;
+    right: 10px;
+    @include resetMg;
+    color: var(--error-color);
+  }
+}
+
+.warning {
+  --warning-color: #E2B93B;
 }

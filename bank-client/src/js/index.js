@@ -24,8 +24,12 @@ export const headerInstance = new Header({
 
 // контейнер со содержимым страницы
 const main = el('main.page');
+const messageList = el('ul.list-reset.message-block__list');
 mount(appContainer, main);
-
+mount(
+	document.body,
+	el('div.message-block', { id: 'system-message' }, messageList)
+);
 // регистрируем роутеры
 
 // авторизация
