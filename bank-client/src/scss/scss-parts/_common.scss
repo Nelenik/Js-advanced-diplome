@@ -10,24 +10,7 @@
 .page {
   flex-grow: 1;
 }
-// блок с системными сообщениями
-.message-block {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column-reverse;
-  width: min(100%, 400px);
-  max-height: 100vh;
-  overflow-y: auto;
-  &__list {
-    height: 100%;
-  }
 
-  &__item{}
-
-  &__close-btn{}
-}
 
 .container {
   @include container(1370px, 15px);
@@ -115,7 +98,7 @@
   position: relative;
   width: 100%;
 }
-
+// стили для валидации полей. messageType: 'error'/messageType: 'warning'
 .error {
   position: relative;
   --error-color: #EB5757;
@@ -130,4 +113,63 @@
 
 .warning {
   --warning-color: #E2B93B;
+}
+// блок с ошибками и предупреждениями
+.notices {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 400px);
+  max-height: 100vh;
+  overflow-y: auto;
+  &__list {
+    height: 100%;
+  }
+}
+
+.notice {
+  position: relative;
+  padding: 50px 30px 30px;
+  border-radius: 20px;
+
+  &--error {
+    --error-color-tr: #ec6363ed;
+    background-color: var(--error-color-tr);
+
+  }
+
+  &--warning {
+    --warning-color-tr: #effc5ef5;
+    background-color: var(--warning-color-tr);
+  }
+
+  &--info {
+    --info-color-tr: #a0c3fff1;
+    background-color: var(--info-color-tr);
+  }
+  &__title {
+    @include resetMg;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.375rem;
+  }
+  &__text {
+    @include resetMg;
+    font-size: 1.125rem;
+    line-height: 150%;
+    font-weight: 600;
+  }
+  &__btn-close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 15px;
+    svg {
+      display: block;
+      width: 20px;
+      aspect-ratio: 1/1;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from './actions/_routes';
-import { request, router } from '..';
+import { request, router, noticesList } from '..';
 import { Select } from './classes/Select';
 import {
 	BalancePerPeriod,
@@ -10,11 +10,16 @@ import {
 	LS,
 	resetPage,
 	createTitleRow,
+	systemMessage,
+	Validate,
 } from './actions/_helpers';
 import { Table } from './classes/Table';
 import { setBalanceDynamicChart } from './actions/_charts';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
+
+let transfFromValid;
+let transfAmountValid;
 
 export function countInfoPage(main, countId) {
 	checkSessionState();
@@ -37,10 +42,11 @@ function fetchHistoryData(countId, dynamicFunc, staticFunc) {
 			if (staticFunc) staticFunc(res);
 		})
 		.catch((err) => {
-			// redirectOnExipredSession(err.message);
-
-			if (/^нет\sданных?/i.test(err.message)) {
-				console.log('Данные по счету отсутствуют');
+			switch (err.message) {
+				case 'Нет данных':
+					noticesList.prepend(
+						systemMessage('Данные по счету отсутствуют', 'warning')
+					);
 			}
 		})
 		.finally(() => {
@@ -174,7 +180,7 @@ function createTransferForm(countId) {
 		name: 'transForm',
 		autocomplete: 'off',
 	});
-	const countNumField = new Select({
+	const transToSelect = new Select({
 		triggerType: 'text',
 		additionalClass: 'transaction__select-field',
 		placeholderText: 'Счет получателя',
@@ -203,7 +209,7 @@ function createTransferForm(countId) {
 			});
 		},
 	});
-	countNumField.autocompleteInput.name = 'transSelect';
+	transToSelect.autocompleteInput.name = 'transSelect';
 	const amountField = el('input.transaction__amount-field', {
 		placeholder: 'Сумма перевода',
 		type: 'number',
@@ -217,7 +223,7 @@ function createTransferForm(countId) {
 	setChildren(form, [
 		el('label.transaction__field-wrap', [
 			el('span', 'Номер счёта получателя'),
-			countNumField.select,
+			transToSelect.select,
 		]),
 		el('label.transaction__field-wrap', [
 			el('span', 'Сумма перевода'),
@@ -226,7 +232,20 @@ function createTransferForm(countId) {
 		transSbmtBtn,
 	]);
 
-	form.addEventListener('submit', formSbmtHandler(countId, countNumField));
+	form.addEventListener('submit', formSbmtHandler(countId));
+	// инициализируем валидацию полей
+	transfFromValid = new Validate(form.transSelect, [
+		{ name: 'required', message: 'Это поле обязательно' },
+		{
+			name: 'minLength',
+			minLength: 10,
+			message: 'Номер счета минимум 10 символов',
+		},
+	]);
+	transfAmountValid = new Validate(amountField, [
+		{ name: 'required', message: 'Это поле обязательно' },
+		{ name: 'positive', message: 'Введите положительное значение' },
+	]);
 
 	return form;
 }
@@ -236,28 +255,60 @@ function formSbmtHandler(countId) {
 	return function (e) {
 		e.preventDefault();
 		if (document.activeElement == e.target.transSelect) return; //предотвращает отправку формы при выборе enter-ом значения в кастомном селекте
-
-		const targetCountValue = e.target.transSelect.value;
+		// валидируем поля
+		transfFromValid.validate();
+		transfAmountValid.validate();
+		if (!transfFromValid.succes && !transfAmountValid.succes) return;
+		// при успешной валидации выполняем нужные действия
+		const transfToValue = e.target.transSelect.value;
 		const amountValue = e.target.transAmount.value;
-		if (targetCountValue.length > 10) {
-			if (LS.get('savedCounts')) {
-				LS.change('savedCounts', (saved) => {
-					if (!saved.includes(targetCountValue)) saved.push(targetCountValue);
-				});
-			} else {
-				LS.set('savedCounts', [targetCountValue]);
-			}
+		if (LS.get('savedCounts')) {
+			LS.change('savedCounts', (saved) => {
+				if (!saved.includes(transfToValue)) saved.push(transfToValue);
+			});
+		} else {
+			LS.set('savedCounts', [transfToValue]);
 		}
 		request
 			.sendTransfer({
 				from: countId,
-				to: targetCountValue,
+				to: transfToValue,
 				amount: amountValue,
 			})
 			.then((res) => {
 				updateDynamicBlocks(res);
 			})
-			.catch((err) => console.log(err))
+			.catch((err) => {
+				// const noticesList = document.getElementById('notices');
+				switch (err.message) {
+					case 'Invalid account to':
+						noticesList.prepend(
+							systemMessage(
+								'Не указан счёт зачисления, или этого счёта не существует',
+								'warning'
+							)
+						);
+						break;
+					case 'Invalid amount':
+						noticesList.prepend(
+							systemMessage(
+								'Не указана сумма перевода, или она отрицательная',
+								'warning'
+							)
+						);
+						break;
+					case 'Overdraft prevented':
+						noticesList.prepend(
+							systemMessage(
+								'Вы пытаетесь перевести больше чем доступно на счете списания',
+								'warning'
+							)
+						);
+						break;
+					default:
+						throw err;
+				}
+			})
 			.finally(() => {
 				e.target.reset();
 			});

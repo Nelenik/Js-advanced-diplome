@@ -24,12 +24,9 @@ export const headerInstance = new Header({
 
 // контейнер со содержимым страницы
 const main = el('main.page');
-const messageList = el('ul.list-reset.message-block__list');
+export const noticesList = el('ul.list-reset.notices__list', { id: 'notices' });
 mount(appContainer, main);
-mount(
-	document.body,
-	el('div.message-block', { id: 'system-message' }, messageList)
-);
+mount(document.body, el('div.notices', noticesList));
 // регистрируем роутеры
 
 // авторизация

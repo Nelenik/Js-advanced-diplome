@@ -1,9 +1,8 @@
 import { el, mount } from 'redom';
-import { routes } from './actions/_routes';
-import { request, router } from '..';
+import { request } from '..';
 import { Card } from './classes/Card';
 import { Select } from './classes/Select';
-import { sortBy, checkSessionState, resetPage } from './actions/_helpers';
+import { sortBy, checkSessionState, resetPage, LS } from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -67,7 +66,7 @@ function createControlPanel() {
 //создаем список карточек по запросу
 function createCardsByRequest() {
 	//сначала загружаем скелет, из хранилища берем количество карточек из предыдущего запроса
-	for (let i = 0; i < (+localStorage.getItem('_countsQuantity') || 1); i++) {
+	for (let i = 0; i < (+LS.get('_countsQuantity') || 1); i++) {
 		new Card().appendCard(cardsList);
 	}
 	// делаем запрос на сервер и после получения ответа отрисовываем карточки
@@ -75,7 +74,7 @@ function createCardsByRequest() {
 		.getCounts()
 		.then((res) => {
 			countsData = [...res];
-			localStorage.setItem('_countsQuantity', `${res.length}`);
+			LS.set('_countsQuantity', `${res.length}`);
 			cardsList.innerHTML = '';
 			res.forEach((item) => {
 				const card = new Card();

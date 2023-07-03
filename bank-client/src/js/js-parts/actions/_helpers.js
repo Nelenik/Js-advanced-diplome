@@ -5,6 +5,7 @@ import { curencyRateSocket } from '../currencies-page';
 
 // import of svg
 import arrowSvg from '!!svg-inline-loader!../../../img/arrow.svg';
+import closeSvg from '!!svg-inline-loader!../../../img/close.svg';
 
 /*******************************************************/
 /*функция проверяет наличие токена с session storage и перенаправляет на страницу авторизации если токена нет*/
@@ -16,7 +17,8 @@ export function checkSessionState() {
 	}
 }
 /*******************************************************/
-/*функция перенаправления на главную страницу при истекшей сессии использвать при обработке ошибок. эту ошибку выбрасывает ServerApi.getToken()*/
+/*(!НЕ ИСПОЛЬЗУЕТСЯ, ВМЕСТО НЕЕ checkSessionState())
+функция перенаправления на главную страницу при истекшей сессии использвать при обработке ошибок. эту ошибку выбрасывает ServerApi.getToken()*/
 export function redirectOnExipredSession(message) {
 	if (/^session\sexpired?/i.test(message)) {
 		console.log(message);
@@ -248,7 +250,8 @@ export class BalancePerPeriod {
 }
 /*******************************************************/
 
-/*Утилита для работы с localStorage содержит методы get(принимает ключ), set(принимает ключ и сохраняемый элементы), remove(принимает ключ), change(принимает ключ и колбэк, в который передаем полученный из хранилища элемент, изменяем его как нужно внутри функции в зависимости от типа данных) */
+/*Утилита LS
+ для работы с localStorage содержит методы get(принимает ключ), set(принимает ключ и сохраняемый элементы), remove(принимает ключ), change(принимает ключ и колбэк, в который передаем полученный из хранилища элемент, изменяем его как нужно внутри функции в зависимости от типа данных) */
 export class LS {
 	static get(key) {
 		let saved = localStorage.getItem(key);
@@ -271,7 +274,8 @@ export class LS {
 	}
 }
 /*******************************************************/
-/*Класс Validate представляет собой инструмент для валидации значений полей ввода. Он имеет следующие особенности:
+/*Класс Validate
+представляет собой инструмент для валидации значений полей ввода. Он имеет следующие особенности:
 
 При инициализации класса Validate передается элемент ввода input и правила rules в качестве параметров(new Validate(input, rules))
 Правила валидации представлены в форме массива объектов:
@@ -309,6 +313,23 @@ export class Validate {
 			messageType: 'error',
 			validation: (value) => {
 				return isFinite(value);
+			},
+		},
+		{
+			name: 'positive',
+			message: 'Only positive numbers',
+			messageType: 'error',
+			validation: (value) => {
+				return isFinite(value) && value > 0;
+			},
+		},
+		{
+			name: 'minLength',
+			message: 'Insufficient count of symbols',
+			minLength: 3,
+			messageType: 'error',
+			validation: function (value) {
+				return value.length >= this.minLength;
 			},
 		},
 	];
@@ -357,7 +378,11 @@ export class Validate {
 	showMessage(message, ruleType) {
 		this.removeMessage();
 		this.messageType = ruleType;
-		this.messageEl = el(`p.${this.messageType}__message`, message);
+		this.messageEl = el(
+			`p.${this.messageType}__message`,
+			{ role: 'alert', 'aria-live': 'assertive' },
+			message
+		);
 		// console.log(this.messageEl)
 		this.fieldWrapper.classList.add(this.messageType);
 		mount(this.fieldWrapper, this.messageEl);
@@ -372,4 +397,34 @@ export class Validate {
 			this.messageEl = null;
 		}
 	}
+}
+/*******************************************************/
+
+/*Функция создания сообщения предупреждающего*/
+export function systemMessage(messageText, messageType = 'error') {
+	const titleStr =
+		messageType.match(/^./)[0].toUpperCase() + messageType.slice(1) + '!';
+	const closeBtn = el('button.btn-reset.notice__btn-close', {
+		type: 'button',
+		'aria-label': 'Закрыть оповещение',
+	});
+	closeBtn.innerHTML = closeSvg;
+
+	const notice = el(
+		`li.notice.notice--${messageType}`,
+		{ role: 'alert', 'aria-live': 'assertive' },
+		[
+			closeBtn,
+			el('h2.notice__title', titleStr),
+			el('p.notice__text', messageText),
+		]
+	);
+
+	closeBtn.addEventListener('click', () => {
+		notice.remove();
+	});
+	wait(2500).then(() => {
+		notice.remove();
+	});
+	return notice;
 }

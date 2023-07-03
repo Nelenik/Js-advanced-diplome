@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "chart.js": "^4.3.0",
+    "creditcard.js": "^3.0.30",
     "imagemin-webp": "^8.0.0",
     "normalize.css": "^8.0.1"
   }

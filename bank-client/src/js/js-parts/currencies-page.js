@@ -1,9 +1,14 @@
 import { el, mount, setChildren } from 'redom';
-import { request } from '..';
-import { checkSessionState, resetPage, LS } from './actions/_helpers';
+import { request, noticesList } from '..';
+import {
+	checkSessionState,
+	resetPage,
+	LS,
+	Validate,
+	systemMessage,
+} from './actions/_helpers';
 import { Select } from './classes/Select';
 
-// let currencyCache = {};
 export let curencyRateSocket;
 export function currenciesPage(main) {
 	checkSessionState();
@@ -44,7 +49,6 @@ function updateUserCurrencies(res) {
 	const userCurrenciesBlock = document.querySelector(
 		'.exchange__user-currencies'
 	);
-	// request.getUserCurrencies().then((res) => {
 	const currencyObjects = Object.values(res);
 	const currenciesElems = currencyObjects.map((item) => {
 		return el('li.user-currencies__item', [
@@ -56,7 +60,6 @@ function updateUserCurrencies(res) {
 		el('h2.user-currencies__title.title.title--m', 'Ваши валюты'),
 		el('ul.user-currencies__list.list-reset', [...currenciesElems]),
 	]);
-	// });
 }
 /************обновление блока "изменение курсов в реальном времени", на базе данных вебсокета*******************/
 function updateCourseDynamic() {
@@ -103,7 +106,7 @@ function updateCourseDynamic() {
 	});
 }
 
-// функция создания объекта с элементами, созданными на базе данных из ls
+// функция создания объекта с элементами, созданными на базе сохраненных в ls курсах валют
 function itemsFromStorage() {
 	const cache = LS.get('currencyRateCache');
 	if (!cache) return {};
@@ -133,6 +136,7 @@ function itemClassName(upDownModifier) {
 }
 
 /*****************обновление блока "обмен валюты"***********/
+let converterSummValid;
 async function updateConverter() {
 	const converterBlock = document.querySelector('.exchange__converter');
 	const allCurrencies = await request.getAllCurrencies();
@@ -188,6 +192,12 @@ async function updateConverter() {
 		el('h2.converter__title.title.title--m', 'Обмен валюты'),
 		converterForm,
 	]);
+
+	converterSummValid = new Validate(converterForm.converterSumm, [
+		{ name: 'required', message: 'Это поле обязательно' },
+		{ name: 'positive', message: 'Введите положительное значение' },
+	]);
+
 	converterForm.addEventListener(
 		'submit',
 		convertFormHandler(fromSelect, toSelect)
@@ -198,6 +208,10 @@ function convertFormHandler(selectFrom, selectTo) {
 	return function (e) {
 		e.preventDefault();
 		if (document.activeElement == e.target.selectTriggerBtn) return;
+		// валидация поля
+		converterSummValid.validate();
+		if (!converterSummValid.success) return;
+		// после успешной валидации
 		const objToPost = {
 			from: selectFrom.selectValue,
 			to: selectTo.selectValue,
@@ -207,7 +221,39 @@ function convertFormHandler(selectFrom, selectTo) {
 			.convert(objToPost)
 			.then((res) => updateUserCurrencies(res))
 			.catch((err) => {
-				console.log(err);
+				switch (err.message) {
+					case 'Invalid amount':
+						noticesList.prepend(
+							systemMessage(
+								'Не указана сумма перевода, или она отрицательная',
+								'warning'
+							)
+						);
+						break;
+					case 'Not enough currency':
+						noticesList.prepend(
+							systemMessage('На валютном счёте списания нет средств', 'warning')
+						);
+						break;
+					case 'Overdraft prevented':
+						noticesList.prepend(
+							systemMessage(
+								'Попытка перевести больше, чем доступно на счёте списания',
+								'warning'
+							)
+						);
+						break;
+					case 'Unknown currency code':
+						noticesList.prepend(
+							systemMessage(
+								'Передан неверный валютный код, код не поддерживается системой',
+								'warning'
+							)
+						);
+						break;
+					default:
+						throw err;
+				}
 			})
 			.finally(() => {
 				e.target.reset();

@@ -103,13 +103,15 @@ function authFormHandler(e) {
 		.catch((err) => {
 			loginValid.success = true;
 			passValid.success = true;
-			const loginRegexp = /^No\ssuch\suser$/;
-			const passwordRegexp = /^Invalid\spassword$/;
-			if (loginRegexp.test(err.message)) {
-				loginValid.showMessage('Неверный логин', 'error');
-			}
-			if (passwordRegexp.test(err.message)) {
-				passValid.showMessage('Неверный пароль', 'error');
+			switch (err.message) {
+				case 'No such user':
+					loginValid.showMessage('Неверный логин', 'error');
+					break;
+				case 'Invalid password':
+					passValid.showMessage('Неверный пароль', 'error');
+					break;
+				default:
+					throw err;
 			}
 		});
 }
