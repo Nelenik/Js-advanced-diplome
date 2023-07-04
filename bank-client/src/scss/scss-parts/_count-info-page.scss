@@ -60,11 +60,26 @@
 
   &__title {}
 
+  &__field-wrap{
+    position: relative;
+  }
+
   &__select-field {}
 
   &__amount-field {}
 
   &__sbmt-btn {}
+}
+
+.pay-system-img {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  display: block;
+  max-width: unset;
+  width: 60px;
+  height: 30px;
 }
 
 .history {

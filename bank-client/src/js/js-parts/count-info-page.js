@@ -1,4 +1,5 @@
-import { el, mount, setChildren } from 'redom';
+import { el, mount, setChildren, unmount } from 'redom';
+import { getCreditCardNameByNumber } from 'creditcard.js';
 import { routes } from './actions/_routes';
 import { request, router, noticesList } from '..';
 import { Select } from './classes/Select';
@@ -18,9 +19,22 @@ import { setBalanceDynamicChart } from './actions/_charts';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
 
+// импортируем все файлы из img с помощью функции вебпак require.context(), позволяет импортировать сразу все файлы из указанной дирректории.
+// eslint-disable-next-line no-undef
+const creditCardsImagesList = require.context(
+	'../../img/card-brands/',
+	true,
+	/\.(png|jpe?g|svg)$/
+);
+const creditCardsImages = creditCardsImagesList
+	.keys()
+	.map((key) => creditCardsImagesList(key));
+
+// здесь сохраняются экземпляры Validate
 let transfFromValid;
 let transfAmountValid;
 
+/**********ГЛАВНАЯ ФУНКЦИЯ СТРАНИЦЫ COUNT-INFO************/
 export function countInfoPage(main, countId) {
 	checkSessionState();
 	resetPage(main);
@@ -157,14 +171,14 @@ const updateBlocks = {
 		]);
 	},
 };
-// функция обновления статических блоков: форма транзакций и номер счета
+// функция обновления статических блоков: форма транзакций и номер счета. Обновляются один раз при получении данных
 function updateStaticBlocks(res) {
 	const container = document.querySelector('.count-info');
 	const { updateCountNum, updateTransactionBlock } = updateBlocks;
 	updateCountNum(container, res);
 	updateTransactionBlock(container, res);
 }
-// функция обновления динамических блоков:баланс, история переводов, динамика транзакций
+// функция обновления динамических блоков:баланс, история переводов, динамика транзакций. Обновляются каждые 30 сек повторным запросом
 function updateDynamicBlocks(res) {
 	const { updateBalance, updateChartBlock, updateHistoryBlock } = updateBlocks;
 	const container = document.querySelector('.count-info');
@@ -184,30 +198,8 @@ function createTransferForm(countId) {
 		triggerType: 'text',
 		additionalClass: 'transaction__select-field',
 		placeholderText: 'Счет получателя',
-		onInput: (select, value) => {
-			wait(300).then(() => {
-				// получаем из хранилища сохраненные счета, фильтруем по строке и сортируем по значению
-				let savedCounts = LS.get('savedCounts');
-				if (!savedCounts) return;
-				const filteredCounts = savedCounts.filter((item) =>
-					item.startsWith(value)
-				);
-				filteredCounts.sort(sortByStr(value));
-				// если в поле ввода что то есть и в отфильтрованный массив счетов не пуст то открываем дропдаун, в противном случае сбрасываем селект
-				if (value.length > 0) {
-					const selectContent = filteredCounts.map((item) => ({
-						text: item,
-						value: item,
-						name: 'counts',
-					}));
-					select.selectContent = selectContent;
-					if (filteredCounts.length > 0) select.isOpen = true;
-				} else {
-					select.isOpen = false;
-					select.reset();
-				}
-			});
-		},
+		onInput: selectOnInput,
+		onValueChange: selectOnValueChange,
 	});
 	transToSelect.autocompleteInput.name = 'transSelect';
 	const amountField = el('input.transaction__amount-field', {
@@ -250,6 +242,49 @@ function createTransferForm(countId) {
 	return form;
 }
 
+//колбэк selectOnInput используется при инициализации Select-а "номер счета получателя" в блоке транзакции, настраивает автодополнение
+function selectOnInput(selectInst, value) {
+	wait(300).then(() => {
+		// получаем из хранилища сохраненные счета, фильтруем по строке и сортируем по значению
+		let savedCounts = LS.get('savedCounts');
+		if (!savedCounts) return;
+		const filteredCounts = savedCounts.filter((item) => item.startsWith(value));
+		filteredCounts.sort(sortByStr(value));
+		// если в поле ввода что то есть и отфильтрованный массив счетов не пуст то открываем дропдаун, в противном случае сбрасываем селект
+		if (value.length > 0) {
+			const selectContent = filteredCounts.map((item) => ({
+				text: item,
+				value: item,
+				name: 'counts',
+			}));
+			selectInst.selectContent = selectContent;
+			if (filteredCounts.length > 0) selectInst.isOpen = true;
+			else selectInst.isOpen = false;
+		} else {
+			selectInst.isOpen = false;
+			selectInst.reset();
+		}
+	});
+}
+// колбэк selectOnValueChange используется при инциализации Select-a, настраивает показ изображения платежной системы
+function selectOnValueChange(selectInst, value) {
+	const selectWrap = selectInst.select.parentElement;
+	const paySystImg = document.getElementById('paySystImg');
+	console.log(paySystImg);
+	paySystImg?.remove();
+	let cardType = getCreditCardNameByNumber(value);
+	if (cardType === 'Credit card is invalid!') return;
+	console.log(cardType);
+	const cardReg = new RegExp(cardType);
+	const src = creditCardsImages.find((src) => cardReg.test(src));
+	const img = new Image();
+	img.src = src;
+	img.alt = 'Изображение платежной системы';
+	img.id = 'paySystImg';
+	img.classList.add('pay-system-img');
+	mount(selectWrap, img);
+}
+
 // обработчик сабмита формы отправки переводов
 function formSbmtHandler(countId) {
 	return function (e) {
@@ -258,7 +293,7 @@ function formSbmtHandler(countId) {
 		// валидируем поля
 		transfFromValid.validate();
 		transfAmountValid.validate();
-		if (!transfFromValid.succes && !transfAmountValid.succes) return;
+		if (!transfFromValid.success && !transfAmountValid.success) return;
 		// при успешной валидации выполняем нужные действия
 		const transfToValue = e.target.transSelect.value;
 		const amountValue = e.target.transAmount.value;

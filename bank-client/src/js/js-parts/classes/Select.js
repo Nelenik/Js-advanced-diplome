@@ -8,10 +8,11 @@ const mySelect = new Select(options);
   { text: 'По балансу', value: 'balance', name: 'sort', selected: false },
   { text: 'По последней транзакции', value: 'transactions.0.date', name: 'sort', selected: true },
 ];
-  onChange: (instance, radioBtnValue)=>{},(получает экземпляр и значение радиокнопки)
+  onSelect: (instance, value)=>{},(получает экземпляр и значение селекта)
   onOpen: (instance)=>{},
   onClose: (instance)=>{},
-  onInput: (instance, inputValue)=>{},(работает с triggerType: 'text', при вводе в инпут, получает экземпляр и значение инпута)
+  onInput: (instance, inputValue)=>{},(работает с triggerType: 'text', при вводе в инпут, получает экземпляр и значение инпута),
+  onValueChange: (instance, inputValue)=>{} (срабатывает при изменении значения селекта)
   additionalClass: 'some-class',(доп. класс добавляется к обертке селекта, полезно при стилизации разных селектов)
   placeholderText: 'some-text',(название списка),
   toChangePlaceholder: true(def), (нужно ли изменять плейсхолдер при выборе)
@@ -42,20 +43,22 @@ export class Select {
 	constructor(options) {
 		const {
 			selectContent,
-			onChange = () => {},
+			onSelect = () => {},
 			onOpen = () => {},
 			onClose = () => {},
 			onInput = () => {},
+			onValueChange = () => {},
 			additionalClass = '',
 			placeholderText = '',
 			toChangePlaceholder = true,
 			triggerType = 'button',
 		} = options;
 
-		this.onChange = onChange;
+		this.onSelect = onSelect;
 		this.onOpen = onOpen;
 		this.onClose = onClose;
 		this.onInput = onInput;
+		this.onValueChange = onValueChange;
 		this.additionalClass = additionalClass;
 		this.placeholderText = placeholderText;
 		this.toChangePlaceholder = toChangePlaceholder;
@@ -136,6 +139,16 @@ export class Select {
 		return this._isOpen;
 	}
 
+	set selectValue(value) {
+		this._selectValue = value;
+		if (!value) return;
+		this.onValueChange(this, value);
+	}
+
+	get selectValue() {
+		return this._selectValue;
+	}
+
 	// проверяем тип select vs autocomplete
 	isSelect() {
 		if (this.triggerType === 'button') {
@@ -151,17 +164,17 @@ export class Select {
 		if (radioBtn.checked) {
 			this.isSelected = radioBtn;
 			this.selectValue = this.isSelected.value;
+
 			if (this.toChangePlaceholder) {
 				if (this.isSelect()) {
 					this.selectTrigger.textContent = itemText;
-					// this.selectTrigger.value = this.selectValue;
 					this.selectTrigger.dataset.value = this.selectValue;
 					this.select.classList.add('select--selected');
 				} else {
 					this.autocompleteInput.value = itemText;
 				}
 			}
-			this.onChange(this, this.selectValue);
+			this.onSelect(this, this.selectValue);
 		}
 	}
 	//функции с обработчиками по элементам
@@ -195,7 +208,9 @@ export class Select {
 	autocomplHandlers() {
 		this.autocompleteInput.addEventListener('input', (e) => {
 			this.isSelected = null;
-			this.onInput(this, e.currentTarget.value);
+			this.prevActive = null;
+			this.selectValue = e.currentTarget.value;
+			this.onInput(this, this.selectValue);
 		});
 		this.autocompleteInput.addEventListener(
 			'keydown',
@@ -282,13 +297,11 @@ export class Select {
 	}
 	reset() {
 		this.selectValue = '';
-		console.log(this.isSelected);
 		// this.isSelected.checked = false;
 		this.prevActive = null;
 		this.isSelected = null;
 		if (this.isSelect()) {
 			this.selectTrigger.textContent = this.placeholderText;
-			this.selectTrigger.value = this.selectValue;
 			this.select.classList.remove('select--selected');
 		} else {
 			this.autocompleteInput.value = '';
