@@ -1,4 +1,4 @@
-import { el, mount, setChildren, unmount } from 'redom';
+import { el, mount, setChildren } from 'redom';
 import { getCreditCardNameByNumber } from 'creditcard.js';
 import { routes } from './actions/_routes';
 import { request, router, noticesList } from '..';
@@ -18,26 +18,42 @@ import { Table } from './classes/Table';
 import { setBalanceDynamicChart } from './actions/_charts';
 // import of svg
 import mailSvg from '!!svg-inline-loader!../../img/mail.svg';
-
-// импортируем все файлы из img с помощью функции вебпак require.context(), позволяет импортировать сразу все файлы из указанной дирректории.
-// eslint-disable-next-line no-undef
-const creditCardsImagesList = require.context(
-	'../../img/card-brands/',
-	true,
-	/\.(png|jpe?g|svg)$/
-);
-const creditCardsImages = creditCardsImagesList
-	.keys()
-	.map((key) => creditCardsImagesList(key));
+//import cardimages
+import amex from '../../img/card-brands/Amex.png';
+import aura from '../../img/card-brands/Aura.png';
+import banescard from '../../img/card-brands/Banescard.png';
+import cabal from '../../img/card-brands/Cabal.png';
+import diners from '../../img/card-brands/Diners.png';
+import discover from '../../img/card-brands/Discover.png';
+import elo from '../../img/card-brands/Elo.png';
+import goodcard from '../../img/card-brands/Goodcard.png';
+import hipercard from '../../img/card-brands/Hipercard.png';
+import mastercard from '../../img/card-brands/Mastercard.png';
+import maxxvan from '../../img/card-brands/Maxxvan.png';
+import visa from '../../img/card-brands/Visa.png';
+const creditCardsImages = [
+	amex,
+	aura,
+	banescard,
+	cabal,
+	diners,
+	discover,
+	elo,
+	goodcard,
+	hipercard,
+	mastercard,
+	maxxvan,
+	visa,
+];
 
 // здесь сохраняются экземпляры Validate
 let transfFromValid;
 let transfAmountValid;
 
 /**********ГЛАВНАЯ ФУНКЦИЯ СТРАНИЦЫ COUNT-INFO************/
-export function countInfoPage(main, countId) {
+export function countInfoPage(main, headerInstance, countId) {
 	checkSessionState();
-	resetPage(main);
+	resetPage(main, headerInstance);
 
 	const container = el('div.container.count-info', [
 		createTitleRow('count-info', 'Просмотр счета', routes.accounts),
@@ -269,20 +285,20 @@ function selectOnInput(selectInst, value) {
 // колбэк selectOnValueChange используется при инциализации Select-a, настраивает показ изображения платежной системы
 function selectOnValueChange(selectInst, value) {
 	const selectWrap = selectInst.select.parentElement;
-	const paySystImg = document.getElementById('paySystImg');
-	console.log(paySystImg);
-	paySystImg?.remove();
+	removeCardImg();
 	let cardType = getCreditCardNameByNumber(value);
 	if (cardType === 'Credit card is invalid!') return;
 	console.log(cardType);
 	const cardReg = new RegExp(cardType);
 	const src = creditCardsImages.find((src) => cardReg.test(src));
-	const img = new Image();
-	img.src = src;
-	img.alt = 'Изображение платежной системы';
-	img.id = 'paySystImg';
-	img.classList.add('pay-system-img');
-	mount(selectWrap, img);
+	mount(
+		selectWrap,
+		el('img.pay-system-img', {
+			id: 'paySystImg',
+			alt: `Изображение платежной системы ${cardType}`,
+			src: src,
+		})
+	);
 }
 
 // обработчик сабмита формы отправки переводов
@@ -293,7 +309,7 @@ function formSbmtHandler(countId) {
 		// валидируем поля
 		transfFromValid.validate();
 		transfAmountValid.validate();
-		if (!transfFromValid.success && !transfAmountValid.success) return;
+		if (!transfFromValid.success || !transfAmountValid.success) return;
 		// при успешной валидации выполняем нужные действия
 		const transfToValue = e.target.transSelect.value;
 		const amountValue = e.target.transAmount.value;
@@ -314,7 +330,6 @@ function formSbmtHandler(countId) {
 				updateDynamicBlocks(res);
 			})
 			.catch((err) => {
-				// const noticesList = document.getElementById('notices');
 				switch (err.message) {
 					case 'Invalid account to':
 						noticesList.prepend(
@@ -346,6 +361,12 @@ function formSbmtHandler(countId) {
 			})
 			.finally(() => {
 				e.target.reset();
+				removeCardImg();
 			});
 	};
+}
+// удаляет изображение платежной системы
+function removeCardImg() {
+	const paySystImg = document.getElementById('paySystImg');
+	paySystImg?.remove();
 }

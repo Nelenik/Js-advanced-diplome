@@ -1,12 +1,12 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from './actions/_routes';
 import { request, router } from '..';
-import { resetPage, Validate } from './actions/_helpers';
+import { Validate, resetPage } from './actions/_helpers';
 import eyeSvg from '!!svg-inline-loader!../../img/eye.svg';
 import eyeCrossedSvg from '!!svg-inline-loader!../../img/eye-crossed.svg';
 
-export function authPage(main) {
-	resetPage(main, false);
+export function authPage(main, headerInstance) {
+	resetPage(main, headerInstance, false);
 	mount(
 		main,
 		el(

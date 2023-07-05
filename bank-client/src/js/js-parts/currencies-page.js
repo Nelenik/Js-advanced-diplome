@@ -10,9 +10,9 @@ import {
 import { Select } from './classes/Select';
 
 export let curencyRateSocket;
-export function currenciesPage(main) {
+export function currenciesPage(main, headerInstance) {
 	checkSessionState();
-	resetPage(main);
+	resetPage(main, headerInstance);
 
 	const container = el('div.container.exchange', [
 		el('h1.exchange__title.title.title--lg', 'Валютный обмен'),

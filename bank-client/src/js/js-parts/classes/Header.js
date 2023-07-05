@@ -24,6 +24,7 @@ export class Header {
 
 	constructor(options) {
 		const { appContainer, enableMenu = false } = options;
+		console.log(appContainer);
 		this.appContainer = appContainer;
 		this.header = el('header.header');
 		this.container = el('.container.header__container');
@@ -32,7 +33,8 @@ export class Header {
 		mount(this.container, logoLink);
 		this.createNav();
 		mount(this.header, this.container);
-		mount(this.appContainer, this.header);
+		this.appContainer?.append(this.header);
+		// mount(this.appContainer, this.header);
 		this.enableMenu = enableMenu;
 
 		window.addEventListener('popstate', () => {

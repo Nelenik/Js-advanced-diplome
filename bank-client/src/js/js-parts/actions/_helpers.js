@@ -8,20 +8,37 @@ import arrowSvg from '!!svg-inline-loader!../../../img/arrow.svg';
 import closeSvg from '!!svg-inline-loader!../../../img/close.svg';
 
 /*******************************************************/
+
+/*Утилита LS
+ для работы с localStorage содержит методы get(принимает ключ), set(принимает ключ и сохраняемый элементы), remove(принимает ключ), change(принимает ключ и колбэк, в который передаем полученный из хранилища элемент, изменяем его как нужно внутри функции в зависимости от типа данных) */
+export class LS {
+	static get(key) {
+		let saved = localStorage.getItem(key);
+		if (saved) return JSON.parse(saved);
+		else return false;
+	}
+
+	static set(key, item) {
+		localStorage.setItem(key, JSON.stringify(item));
+	}
+
+	static change(key, func) {
+		let saved = LS.get(key);
+		func(saved);
+		LS.set(key, saved);
+	}
+
+	static remove(key) {
+		localStorage.removeItem(key);
+	}
+}
+
+/*******************************************************/
 /*функция проверяет наличие токена с session storage и перенаправляет на страницу авторизации если токена нет*/
 export function checkSessionState() {
 	const token = sessionStorage.getItem('token');
 	if (!token) {
 		alert('Время сессии истекло!');
-		router.navigate(routes.auth);
-	}
-}
-/*******************************************************/
-/*(!НЕ ИСПОЛЬЗУЕТСЯ, ВМЕСТО НЕЕ checkSessionState())
-функция перенаправления на главную страницу при истекшей сессии использвать при обработке ошибок. эту ошибку выбрасывает ServerApi.getToken()*/
-export function redirectOnExipredSession(message) {
-	if (/^session\sexpired?/i.test(message)) {
-		console.log(message);
 		router.navigate(routes.auth);
 	}
 }
@@ -34,10 +51,10 @@ export function wait(ms) {
 	});
 }
 /*******************************************************/
-/*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestTimeout*/
-export function resetPage(main, turnOnMenu = true) {
+/*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestTimeout" закрывает канал сокета*/
+export function resetPage(main, headerInst, turnOnMenu = true) {
 	main.innerHTML = '';
-	headerInstance.enableMenu = turnOnMenu;
+	headerInst.enableMenu = turnOnMenu;
 	const key = 'countDataRequestTimeout';
 	const timeoutId = LS.get(key);
 	if (timeoutId) clearTimeout(timeoutId);
@@ -47,7 +64,7 @@ export function resetPage(main, turnOnMenu = true) {
 /*******************************************************/
 // получаем id из квери запроса, применяется на странице "просмотр счета" и "история баланса"
 export function getIdFromQueryStr(queryStr) {
-	const match = queryStr.match(/id=(.*)/);
+	const match = queryStr.match(/id=(.+)/);
 	if (match) return match[1];
 }
 /*******************************************************/
@@ -248,31 +265,7 @@ export class BalancePerPeriod {
 		return balancePerMonth;
 	}
 }
-/*******************************************************/
 
-/*Утилита LS
- для работы с localStorage содержит методы get(принимает ключ), set(принимает ключ и сохраняемый элементы), remove(принимает ключ), change(принимает ключ и колбэк, в который передаем полученный из хранилища элемент, изменяем его как нужно внутри функции в зависимости от типа данных) */
-export class LS {
-	static get(key) {
-		let saved = localStorage.getItem(key);
-		if (saved) return JSON.parse(saved);
-		else return false;
-	}
-
-	static set(key, item) {
-		localStorage.setItem(key, JSON.stringify(item));
-	}
-
-	static change(key, func) {
-		let saved = LS.get(key);
-		func(saved);
-		LS.set(key, saved);
-	}
-
-	static remove(key) {
-		localStorage.removeItem(key);
-	}
-}
 /*******************************************************/
 /*Класс Validate
 представляет собой инструмент для валидации значений полей ввода. Он имеет следующие особенности:
@@ -358,7 +351,7 @@ export class Validate {
 				const findRes = this.defRules.find(
 					(defRule) => defRule.name === item.name
 				);
-				return findRes ? Object.assign(findRes, item) : item;
+				return findRes ? Object.assign({}, findRes, item) : item;
 			});
 		}
 	}

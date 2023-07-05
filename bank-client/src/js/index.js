@@ -1,11 +1,11 @@
-import '../index.html';
+// import '../index.html';
 import '../scss/index.scss';
-import Navigo from 'navigo';
 import { el, mount } from 'redom';
+import Navigo from 'navigo';
 import { routes } from './js-parts/actions/_routes'; //маршруты
-import { getIdFromQueryStr } from './js-parts/actions/_helpers';
-import { ServerApi } from './js-parts/classes/Serverapi'; //класс с методами запросов
 import { Header } from './js-parts/classes/Header'; // класс хедера
+import { ServerApi } from './js-parts/classes/Serverapi'; //класс с методами запросов
+import { getIdFromQueryStr } from './js-parts/actions/_helpers';
 import { authPage } from './js-parts/auth-page'; //страница авторизации
 import { countsPage } from './js-parts/counts-page'; //все счета
 import { countInfoPage } from './js-parts/count-info-page'; //информация об одном счете
@@ -25,35 +25,36 @@ export const headerInstance = new Header({
 // контейнер со содержимым страницы
 const main = el('main.page');
 export const noticesList = el('ul.list-reset.notices__list', { id: 'notices' });
-mount(appContainer, main);
+appContainer?.append(main);
+// mount(appContainer, main);
 mount(document.body, el('div.notices', noticesList));
 // регистрируем роутеры
 
 // авторизация
 router.on(routes.auth, () => {
-	authPage(main);
+	authPage(main, headerInstance);
 	sessionStorage.removeItem('token');
 });
 // список счетов
 router.on(routes.accounts, () => {
-	countsPage(main);
+	countsPage(main, headerInstance);
 });
 // инфо о счете
 router.on(routes.countInfo, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
-	countInfoPage(main, `${id}`);
+	countInfoPage(main, headerInstance, `${id}`);
 });
 // история баланса
 router.on(routes.balance, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
-	balancePage(main, `${id}`);
+	balancePage(main, headerInstance, `${id}`);
 });
 // банки
 router.on(routes.banks, () => {
-	banksPage(main);
+	banksPage(main, headerInstance);
 });
 // обмен валют
 router.on(routes.currencies, () => {
-	currenciesPage(main);
+	currenciesPage(main, headerInstance);
 });
 router.resolve();
