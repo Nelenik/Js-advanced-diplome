@@ -10,9 +10,9 @@ import { sortBy, checkSessionState, LS, resetPage } from './actions/_helpers';
 const cardsList = el('ul.list-reset.counts-page__counts');
 let countsData = [];
 
-export function countsPage(main, headerInstance) {
+export function countsPage(main) {
 	checkSessionState();
-	resetPage(main, headerInstance);
+	resetPage(main);
 
 	const container = el('div.container.counts-page', [
 		el('h1.counts-page__title.title.title--lg', 'Ваши счета'),

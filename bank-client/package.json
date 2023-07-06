@@ -22,8 +22,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
+    "@babel/core": "^7.22.7",
+    "@babel/preset-env": "^7.22.7",
     "@types/jest": "^29.5.2",
     "babel-jest": "^29.6.0",
     "babel-loader": "^9.1.2",
@@ -45,15 +45,13 @@
     "imagemin-jpegtran": "^7.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-svgo": "^10.0.1",
-    "jest": "^29.5.0",
-    "jest-environment-jsdom": "^29.5.0",
+    "jest": "^29.6.0",
+    "jest-environment-jsdom": "^29.6.0",
     "mini-css-extract-plugin": "^2.7.5",
-    "navigo": "^8.11.1",
     "postcss": "^8.4.23",
     "postcss-loader": "^7.2.4",
     "postcss-preset-env": "^8.3.2",
     "prettier": "^2.8.8",
-    "redom": "^3.29.1",
     "sass": "^1.62.0",
     "sass-loader": "^13.2.2",
     "style-loader": "^3.3.2",
@@ -67,6 +65,8 @@
     "chart.js": "^4.3.0",
     "creditcard.js": "^3.0.30",
     "imagemin-webp": "^8.0.0",
-    "normalize.css": "^8.0.1"
+    "navigo": "^8.11.1",
+    "normalize.css": "^8.0.1",
+    "redom": "^3.29.1"
   }
 }

@@ -14,9 +14,9 @@ import {
 } from './actions/_charts';
 import { Pagination } from './classes/Pagination';
 
-export function balancePage(main, headerInstance, countId) {
+export function balancePage(main, countId) {
 	checkSessionState();
-	resetPage(main, headerInstance);
+	resetPage(main);
 	const container = el('div.container.balance-page', [
 		createTitleRow(
 			'balance-page',

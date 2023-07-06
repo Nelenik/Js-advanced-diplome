@@ -5,9 +5,9 @@ import * as ymaps3 from 'ymaps3';
 import mapPlug from '../../img/map-plug.png';
 import markSvg from '!!svg-inline-loader!../../img/mark.svg';
 
-export async function banksPage(main, headerInstance) {
+export async function banksPage(main) {
 	checkSessionState();
-	resetPage(main, headerInstance);
+	resetPage(main);
 
 	const mapBlock = el(
 		'div.banks__map-block',

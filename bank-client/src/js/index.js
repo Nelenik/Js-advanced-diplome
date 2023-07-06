@@ -1,7 +1,7 @@
 // import '../index.html';
 import '../scss/index.scss';
 import { el, mount } from 'redom';
-import Navigo from 'navigo';
+import { default as Navigo } from 'navigo';
 import { routes } from './js-parts/actions/_routes'; //маршруты
 import { Header } from './js-parts/classes/Header'; // класс хедера
 import { ServerApi } from './js-parts/classes/Serverapi'; //класс с методами запросов
@@ -13,7 +13,7 @@ import { balancePage } from './js-parts/balance-page'; //информация о
 import { currenciesPage } from './js-parts/currencies-page'; //страница по валютным счетам
 import { banksPage } from './js-parts/banks-page'; //страница с банками
 
-export const router = new Navigo(routes.auth);
+export const router = new Navigo(`${routes.auth}`);
 export const request = new ServerApi('http://localhost:3000');
 
 const appContainer = document.getElementById('bank-app');
@@ -25,36 +25,36 @@ export const headerInstance = new Header({
 // контейнер со содержимым страницы
 const main = el('main.page');
 export const noticesList = el('ul.list-reset.notices__list', { id: 'notices' });
-appContainer?.append(main);
-// mount(appContainer, main);
+// appContainer?.append(main);
+mount(appContainer, main);
 mount(document.body, el('div.notices', noticesList));
 // регистрируем роутеры
 
 // авторизация
 router.on(routes.auth, () => {
-	authPage(main, headerInstance);
+	authPage(main);
 	sessionStorage.removeItem('token');
 });
 // список счетов
 router.on(routes.accounts, () => {
-	countsPage(main, headerInstance);
+	countsPage(main);
 });
 // инфо о счете
 router.on(routes.countInfo, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
-	countInfoPage(main, headerInstance, `${id}`);
+	countInfoPage(main, `${id}`);
 });
 // история баланса
 router.on(routes.balance, (data) => {
 	const id = getIdFromQueryStr(data.queryString);
-	balancePage(main, headerInstance, `${id}`);
+	balancePage(main, `${id}`);
 });
 // банки
 router.on(routes.banks, () => {
-	banksPage(main, headerInstance);
+	banksPage(main);
 });
 // обмен валют
 router.on(routes.currencies, () => {
-	currenciesPage(main, headerInstance);
+	currenciesPage(main);
 });
 router.resolve();

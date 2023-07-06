@@ -5,8 +5,8 @@ import { Validate, resetPage } from './actions/_helpers';
 import eyeSvg from '!!svg-inline-loader!../../img/eye.svg';
 import eyeCrossedSvg from '!!svg-inline-loader!../../img/eye-crossed.svg';
 
-export function authPage(main, headerInstance) {
-	resetPage(main, headerInstance, false);
+export function authPage(main) {
+	resetPage(main, false);
 	mount(
 		main,
 		el(

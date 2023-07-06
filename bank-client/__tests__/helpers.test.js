@@ -1,9 +1,5 @@
 import { getIdFromQueryStr } from '../src/js/js-parts/actions/_helpers';
-// function getIdFromQueryStr(queryStr) {
-// 	console.log(queryStr);
-// 	const match = queryStr.match(/id=(.+)/);
-// 	if (match) return match[1];
-// }
+
 describe('Check correct extraction of id-number from str', () => {
 	const testValues = [
 		{

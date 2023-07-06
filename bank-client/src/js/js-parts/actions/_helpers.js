@@ -52,9 +52,9 @@ export function wait(ms) {
 }
 /*******************************************************/
 /*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestTimeout" закрывает канал сокета*/
-export function resetPage(main, headerInst, turnOnMenu = true) {
+export function resetPage(main, turnOnMenu = true) {
 	main.innerHTML = '';
-	headerInst.enableMenu = turnOnMenu;
+	headerInstance.enableMenu = turnOnMenu;
 	const key = 'countDataRequestTimeout';
 	const timeoutId = LS.get(key);
 	if (timeoutId) clearTimeout(timeoutId);
@@ -88,8 +88,6 @@ export function createTitleRow(pageClass, pageTitle, backRoute) {
 		backLink,
 	]);
 }
-/*******************************************************/
-
 /*******************************************************/
 
 /*пользовательская функция метода массивов sort(), сортирует по заданной подстроке = arr.sort(sortByStr('str')*/

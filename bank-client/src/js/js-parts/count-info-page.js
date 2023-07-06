@@ -51,9 +51,9 @@ let transfFromValid;
 let transfAmountValid;
 
 /**********ГЛАВНАЯ ФУНКЦИЯ СТРАНИЦЫ COUNT-INFO************/
-export function countInfoPage(main, headerInstance, countId) {
+export function countInfoPage(main, countId) {
 	checkSessionState();
-	resetPage(main, headerInstance);
+	resetPage(main);
 
 	const container = el('div.container.count-info', [
 		createTitleRow('count-info', 'Просмотр счета', routes.accounts),
