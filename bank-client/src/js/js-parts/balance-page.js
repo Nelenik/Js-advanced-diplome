@@ -1,12 +1,7 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from './actions/_routes';
 import { request } from '..';
-import {
-	BalancePerPeriod,
-	checkSessionState,
-	createTitleRow,
-	resetPage,
-} from './actions/_helpers';
+import { BalancePerPeriod } from './actions/_helpers';
 import { Table } from './classes/Table';
 import {
 	setBalanceDynamicChart,
@@ -14,9 +9,7 @@ import {
 } from './actions/_charts';
 import { Pagination } from './classes/Pagination';
 
-export function balancePage(main, countId) {
-	checkSessionState();
-	resetPage(main);
+export function balancePage(main, countId, createTitleRow) {
 	const container = el('div.container.balance-page', [
 		createTitleRow(
 			'balance-page',

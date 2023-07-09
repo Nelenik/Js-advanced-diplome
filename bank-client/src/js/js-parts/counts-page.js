@@ -2,7 +2,7 @@ import { el, mount } from 'redom';
 import { request } from '..';
 import { Card } from './classes/Card';
 import { Select } from './classes/Select';
-import { sortBy, checkSessionState, LS, resetPage } from './actions/_helpers';
+import { sortBy, LS } from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -11,9 +11,6 @@ const cardsList = el('ul.list-reset.counts-page__counts');
 let countsData = [];
 
 export function countsPage(main) {
-	checkSessionState();
-	resetPage(main);
-
 	const container = el('div.container.counts-page', [
 		el('h1.counts-page__title.title.title--lg', 'Ваши счета'),
 		createControlPanel(),

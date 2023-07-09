@@ -1,19 +1,10 @@
 import { el, mount, setChildren } from 'redom';
 import { request, noticesList } from '..';
-import {
-	checkSessionState,
-	resetPage,
-	LS,
-	Validate,
-	systemMessage,
-} from './actions/_helpers';
+import { LS, Validate, systemMessage } from './actions/_helpers';
 import { Select } from './classes/Select';
 
 export let curencyRateSocket;
 export function currenciesPage(main) {
-	checkSessionState();
-	resetPage(main);
-
 	const container = el('div.container.exchange', [
 		el('h1.exchange__title.title.title--lg', 'Валютный обмен'),
 		createCurenciesSkeleton(),

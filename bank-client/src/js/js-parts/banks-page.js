@@ -1,14 +1,10 @@
 import { el, mount } from 'redom';
 import { request } from '..';
-import { checkSessionState, resetPage } from './actions/_helpers';
 import * as ymaps3 from 'ymaps3';
 import mapPlug from '../../img/map-plug.png';
 import markSvg from '!!svg-inline-loader!../../img/mark.svg';
 
 export async function banksPage(main) {
-	checkSessionState();
-	resetPage(main);
-
 	const mapBlock = el(
 		'div.banks__map-block',
 		{ id: 'banks-map' },

@@ -1,6 +1,6 @@
 import { el, mount, setChildren } from 'redom';
 import { routes } from '../actions/_routes';
-import { router, headerInstance } from '../..';
+import { headerInstance, router } from '../..';
 export class Card {
 	constructor() {
 		this.card = el('li.card');

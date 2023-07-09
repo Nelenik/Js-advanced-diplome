@@ -5,12 +5,9 @@ import { request, router, noticesList } from '..';
 import { Select } from './classes/Select';
 import {
 	BalancePerPeriod,
-	checkSessionState,
 	sortByStr,
 	wait,
 	LS,
-	resetPage,
-	createTitleRow,
 	systemMessage,
 	Validate,
 } from './actions/_helpers';
@@ -51,9 +48,9 @@ let transfFromValid;
 let transfAmountValid;
 
 /**********ГЛАВНАЯ ФУНКЦИЯ СТРАНИЦЫ COUNT-INFO************/
-export function countInfoPage(main, countId) {
-	checkSessionState();
-	resetPage(main);
+export function countInfoPage(main, countId, createTitleRow) {
+	// checkSessionState();
+	// resetPage(main);
 
 	const container = el('div.container.count-info', [
 		createTitleRow('count-info', 'Просмотр счета', routes.accounts),

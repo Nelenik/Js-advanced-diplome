@@ -1,10 +1,6 @@
-import { router, headerInstance } from '../..';
-import { routes } from './_routes';
 import { el, mount, unmount } from 'redom';
-import { curencyRateSocket } from '../currencies-page';
 
 // import of svg
-import arrowSvg from '!!svg-inline-loader!../../../img/arrow.svg';
 import closeSvg from '!!svg-inline-loader!../../../img/close.svg';
 
 /*******************************************************/
@@ -34,15 +30,6 @@ export class LS {
 }
 
 /*******************************************************/
-/*функция проверяет наличие токена с session storage и перенаправляет на страницу авторизации если токена нет*/
-export function checkSessionState() {
-	const token = sessionStorage.getItem('token');
-	if (!token) {
-		alert('Время сессии истекло!');
-		router.navigate(routes.auth);
-	}
-}
-/*******************************************************/
 
 /* функция wait*/
 export function wait(ms) {
@@ -51,42 +38,10 @@ export function wait(ms) {
 	});
 }
 /*******************************************************/
-/*функция очищает main перед рендерингом каждой страницы, очищает интервал запроса данных, который запускается на странице счета, и очищает в хранилище "countDataRequestTimeout" закрывает канал сокета*/
-export function resetPage(main, turnOnMenu = true) {
-	main.innerHTML = '';
-	headerInstance.enableMenu = turnOnMenu;
-	const key = 'countDataRequestTimeout';
-	const timeoutId = LS.get(key);
-	if (timeoutId) clearTimeout(timeoutId);
-	LS.remove(key);
-	if (curencyRateSocket) curencyRateSocket.close();
-}
-/*******************************************************/
 // получаем id из квери запроса, применяется на странице "просмотр счета" и "история баланса"
 export function getIdFromQueryStr(queryStr) {
 	const match = queryStr.match(/id=(.+)/);
 	if (match) return match[1];
-}
-/*******************************************************/
-/*функция создания строки с заголовком и кнопкой назад на страницах "посмотр счета" и "история баланса", т.к. они одинаковые на этих 2 страницах, принимает: pageClass(имя блока к которому относится, в нашем случае блоком является имя страницы), pageTitle(строка, название страницы), backRoute(путь для ссылки назад*/
-export function createTitleRow(pageClass, pageTitle, backRoute) {
-	const backLink = el(
-		`a.link-reset.blue-btn.blue-btn--back.${pageClass}__back-link`,
-		{
-			href: `${backRoute}`,
-		}
-	);
-	backLink.innerHTML = `${arrowSvg} Вернуться назад`;
-	backLink.addEventListener('click', (e) => {
-		e.preventDefault();
-		router.navigate(`${backRoute}`);
-		headerInstance.switchActiveLinkState(backRoute);
-	});
-
-	return el(`div.${pageClass}__title-row`, [
-		el(`h1.${pageClass}__title.title.title--lg`, `${pageTitle}`),
-		backLink,
-	]);
 }
 /*******************************************************/
 
