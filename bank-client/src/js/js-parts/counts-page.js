@@ -2,7 +2,7 @@ import { el, mount } from 'redom';
 import { request } from '..';
 import { Card } from './classes/Card';
 import { Select } from './classes/Select';
-import { sortBy, LS } from './actions/_helpers';
+import { sortByProp, LS } from './actions/_helpers';
 
 // import plusSvg from '!!svg-inline-loader!../../img/plus.svg';
 // import checkSvg from '!!svg-inline-loader!../../img/check.svg';
@@ -35,7 +35,7 @@ function createControlPanel() {
 	const sorter = new Select({
 		selectContent: selectContent,
 		onSelect: (inst, value) => {
-			countsData.sort(sortBy(value));
+			countsData.sort(sortByProp(value));
 			cardsList.innerHTML = '';
 			countsData.forEach((item) => {
 				const card = new Card();

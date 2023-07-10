@@ -58,17 +58,17 @@ export function sortByStr(str) {
 }
 /*******************************************************/
 
-/*пользовательская функция метода массивов sort(), сортирует по имени свойства
-arr.sort(sortBy('name'))
+/*пользовательская функция метода массивов sort(), сортирует по имени свойства по возрастанию
+arr.sort(sortByProp('name'))
 если объект имеет более сложную структуру например :
 {
   name: 'Pete',
   age: 20,
   lastVisit: [{date: '2022-01-01'}]
-}, вызов сортировки => arr.sort(sortBy('lastVisit.0.date')) т.е. обращаемся к первому элементу массива lastVisit и берем его свойсвто date
+}, вызов сортировки => arr.sort(sortByProp('lastVisit.0.date')) т.е. обращаемся к первому элементу массива lastVisit и берем его свойсвто date
 
 */
-export function sortBy(prop) {
+export function sortByProp(prop) {
 	const props = prop.split('.');
 	return (a, b) => {
 		let aValue = a;
@@ -85,7 +85,7 @@ export function sortBy(prop) {
 			return -1;
 		} else if (typeof aValue === 'string' && typeof bValue === 'string') {
 			if (!isNaN(Date.parse(aValue)) && !isNaN(Date.parse(bValue))) {
-				return Date.parse(bValue) - Date.parse(aValue);
+				return Date.parse(aValue) - Date.parse(bValue);
 			}
 			return aValue.localeCompare(bValue);
 		} else if (typeof aValue === 'number' && typeof bValue === 'number') {
@@ -96,9 +96,23 @@ export function sortBy(prop) {
 /*******************************************************/
 
 /*Класс BalancePerPeriod
- Класс BalancePerPeriod используется для вычисления и организации данных о балансе счета на протяжении заданного периода. Он принимает информацию о балансе и транзакциях, определяет начальную дату для расчета и группирует транзакции по месяцам. Затем класс вычисляет баланс на конец каждого месяца, учитывая входящие и исходящие транзакции. Результат представлен в виде массива с информацией о месяце, транзакциях и балансе.
+ Класс BalancePerPeriod используется для вычисления и организации данных о балансе счета на протяжении заданного периода. Он принимает информацию о счете пользователя, а именно нужны конечный баланс и массив с транзакциями, определяет начальную дату для расчета и группирует транзакции по месяцам. Затем класс вычисляет баланс на конец каждого месяца, учитывая входящие и исходящие транзакции. Результат представлен в виде массива с информацией о месяце, транзакциях и балансе.
  - monthesToSubtract - это за сколько месяцев нужно посчитать баланс. Нужно иметь в виду что отсчет идет с 0, т.е. если нужен период в 6 мес, указываем 5;
  -response - это объект полученный из запроса. Код учитывает конкретную структуру данных
+ После преобразований массив транзакций преобазуется в массив объектов следующего вида:
+ [
+  {
+    "month": "авг",
+    "year": 2022,
+    "transactions": {
+        "incoming": 3900.81,
+        "outgoing": 5879.5,
+        "difference": -1978.69,
+        "commonTransSum": 9780.31,
+        "balance": -16570.85
+    }
+  }
+]
 */
 export class BalancePerPeriod {
 	monthNames = [
@@ -163,16 +177,20 @@ export class BalancePerPeriod {
 		const searchIndex = this.transArray.findIndex(
 			(el) => new Date(el.date) >= this.startDate
 		);
-		const newTransArr = this.transArray.slice(searchIndex);
-		for (let item of newTransArr) {
-			const transDate = new Date(item.date);
-			const transMonthName = this.monthNames[transDate.getMonth()];
-			const transYear = transDate.getFullYear();
-			const itemToChangeInd = finalArray.findIndex(
-				(item) => item.month === transMonthName && item.year === transYear
-			);
-			finalArray[itemToChangeInd].transactions.push(item);
+		// если searchIndex = -1 значит в последние месяцы(месяц)нет транзакций, поэтому с массивом транзакций взаимодействуем, только если значение >=0 в противном случае в finalArray будет базовая заглушка
+		if (searchIndex >= 0) {
+			const newTransArr = this.transArray.slice(searchIndex);
+			for (let item of newTransArr) {
+				const transDate = new Date(item.date);
+				const transMonthName = this.monthNames[transDate.getMonth()];
+				const transYear = transDate.getFullYear();
+				const itemToChangeInd = finalArray.findIndex(
+					(item) => item.month === transMonthName && item.year === transYear
+				);
+				finalArray[itemToChangeInd].transactions.push(item);
+			}
 		}
+
 		return finalArray;
 	}
 	// считаем сумму входящих, исходящих транзакций, а также их разницу. нужно для вычисления баланаса на конец месяца

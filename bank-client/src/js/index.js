@@ -71,9 +71,11 @@ router.on(routes.currencies, () => {
 router.resolve();
 
 // навигация при первой загрузке страницы(без этого не работает prod-версия)
-router.navigate(`${routes.auth}`);
+// router.navigate(`${routes.auth}`);
 
-/***************НЕКОТОРЫЕ ОБЩИЕ ФУНКЦИИ********************/
+/***************НЕКОТОРЫЕ ОБЩИЕ ФУНКЦИИ***********/
+/******(из helpers убрала из-за циклической зависимости, что мешала тестам)*********/
+
 /*функция проверяет наличие токена с session storage и перенаправляет на страницу авторизации если токена нет*/
 function checkSessionState() {
 	const token = sessionStorage.getItem('token');
