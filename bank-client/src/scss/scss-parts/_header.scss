@@ -37,8 +37,22 @@
     line-height: 125%; /* 20px/16 */
     font-weight: 500;
     color: $brand-primary;
-    &--active {
+    border: 1px solid $brand-primary;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    @include sol920 {
+      padding: 11px 19px;
+    }
+
+    &:focus-visible {
+      background-color: $brand-primary-act;
+      color: $white;
+    }
+    &--active, &:hover:not(:focus-visible) {
       background-color: $state-info;
+    }
+
+    &:active {
+      background-color: #CFE1F5;
     }
   }
 }

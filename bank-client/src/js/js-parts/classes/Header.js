@@ -33,8 +33,8 @@ export class Header {
 		mount(this.container, logoLink);
 		this.createNav();
 		mount(this.header, this.container);
-		this.appContainer?.append(this.header);
-		// mount(this.appContainer, this.header);
+		// this.appContainer?.append(this.header);
+		mount(this.appContainer, this.header);
 		this.enableMenu = enableMenu;
 
 		window.addEventListener('popstate', () => {

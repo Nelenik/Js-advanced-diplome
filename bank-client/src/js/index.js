@@ -30,12 +30,15 @@ mount(appContainer, main);
 mount(document.body, el('div.notices', noticesList));
 
 /******** РЕГИСТРАЦИЯ МАРШРУТОВ *********/
+
 // авторизация
 router.on(routes.auth, () => {
 	resetPage(main, false);
 	authPage(main);
 	sessionStorage.removeItem('token');
 });
+// навигация при первой загрузке страницы(без этого не работает prod-версия)
+// router.navigate(`${routes.auth}`);
 // список счетов
 router.on(routes.accounts, () => {
 	checkSessionState();
@@ -69,9 +72,6 @@ router.on(routes.currencies, () => {
 	currenciesPage(main);
 });
 router.resolve();
-
-// навигация при первой загрузке страницы(без этого не работает prod-версия)
-// router.navigate(`${routes.auth}`);
 
 /***************НЕКОТОРЫЕ ОБЩИЕ ФУНКЦИИ***********/
 /******(из helpers убрала из-за циклической зависимости, что мешала тестам)*********/

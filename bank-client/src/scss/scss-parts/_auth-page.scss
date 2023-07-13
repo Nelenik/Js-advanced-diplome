@@ -7,7 +7,7 @@
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(100%, 500px);
+    width: min(95%, 500px);
     padding: 50px 40px;
     border-radius: 50px;
     background-color: $gray-7;
@@ -32,6 +32,10 @@
     display: flex;
     align-items: center;
     gap: 18px;
+    @include sol500 {
+      flex-direction: column;
+      gap: 10px;
+    }
 
     span {
       display: inline-block;
@@ -42,6 +46,10 @@
       line-height: 125%; /* 20px/16 */
       color: $brand-secondary1;
       text-align: right;
+      @include sol500 {
+        align-self: flex-start;
+        text-align: left;
+      }
     }
 
     &:not(:last-child) {
@@ -61,11 +69,23 @@
     border-radius: 7px;
     background-color: $white;
     border: 1px solid $gray-5;
+    outline: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    &:focus:not(.error .auth-form__field) {
+      border-color: $brand-primary;
+      background-color: rgba(160, 195, 255, 0.1);
+    }
+    @include sol500 {
+      width: 100%;
+    }
   }
 
   &__sbmt-btn {
     max-width: max-content;
     transform: translateX(110%);
+    @include sol500 {
+      transform: unset;
+    }
   }
 }
 

@@ -23,7 +23,8 @@
   font-weight: 700;
 
   &--lg {
-    font-size: 2.125rem;
+    // font-size: 2.125rem;
+    font-size: clamp(1.5rem, 0.9vw + 1.3rem, 2.125rem);
     line-height: 117.647059%;
     /* 40px/34 */
   }
@@ -46,6 +47,15 @@
   line-height: 125%;
   /* 20px/16 */
   color: $white;
+  transition: background-color 0.3s ease;
+
+  &:focus, &:hover {
+    background-color: $brand-primary-hov;
+  }
+
+  &:active {
+    background-color: $brand-primary-act;
+  }
 
   &--sm {
     padding: 14px 21px;
@@ -108,6 +118,10 @@
     right: 10px;
     @include resetMg;
     color: var(--error-color);
+  }
+
+  input {
+    border-color: var(--error-color);
   }
 }
 

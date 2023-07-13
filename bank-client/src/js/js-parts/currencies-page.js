@@ -198,56 +198,70 @@ async function updateConverter() {
 function convertFormHandler(selectFrom, selectTo) {
 	return function (e) {
 		e.preventDefault();
-		if (document.activeElement == e.target.selectTriggerBtn) return;
+		if (document.activeElement == e.target.selectTriggerBtn) return; //эта строчка нужна чтобы форма не отправлялась при нажатии на enter при выборе значения в селекте кастомном
 		// валидация поля
 		converterSummValid.validate();
 		if (!converterSummValid.success) return;
-		// после успешной валидации
-		const objToPost = {
-			from: selectFrom.selectValue,
-			to: selectTo.selectValue,
-			amount: e.target.converterSumm.value,
-		};
-		request
-			.convert(objToPost)
-			.then((res) => updateUserCurrencies(res))
-			.catch((err) => {
-				switch (err.message) {
-					case 'Invalid amount':
-						noticesList.prepend(
-							systemMessage(
-								'Не указана сумма перевода, или она отрицательная',
-								'warning'
-							)
-						);
-						break;
-					case 'Not enough currency':
-						noticesList.prepend(
-							systemMessage('На валютном счёте списания нет средств', 'warning')
-						);
-						break;
-					case 'Overdraft prevented':
-						noticesList.prepend(
-							systemMessage(
-								'Попытка перевести больше, чем доступно на счёте списания',
-								'warning'
-							)
-						);
-						break;
-					case 'Unknown currency code':
-						noticesList.prepend(
-							systemMessage(
-								'Передан неверный валютный код, код не поддерживается системой',
-								'warning'
-							)
-						);
-						break;
-					default:
-						throw err;
-				}
-			})
-			.finally(() => {
-				e.target.reset();
-			});
+
+		try {
+			const selFromVal = selectFrom.selectValue;
+			const selToVal = selectTo.selectValue;
+			if (selFromVal === selToVal) throw Error('Same account converting');
+			// после успешной валидации
+			const objToPost = {
+				from: selFromVal,
+				to: selToVal,
+				amount: e.target.converterSumm.value,
+			};
+			request
+				.convert(objToPost)
+				.then((res) => updateUserCurrencies(res))
+				.catch((err) => {
+					switch (err.message) {
+						case 'Invalid amount':
+							noticesList.prepend(
+								systemMessage(
+									'Не указана сумма перевода, или она отрицательная',
+									'warning'
+								)
+							);
+							break;
+						case 'Not enough currency':
+							noticesList.prepend(
+								systemMessage(
+									'На валютном счёте списания нет средств',
+									'warning'
+								)
+							);
+							break;
+						case 'Overdraft prevented':
+							noticesList.prepend(
+								systemMessage(
+									'Попытка перевести больше, чем доступно на счёте списания',
+									'warning'
+								)
+							);
+							break;
+						case 'Unknown currency code':
+							noticesList.prepend(
+								systemMessage(
+									'Передан неверный валютный код, код не поддерживается системой',
+									'warning'
+								)
+							);
+							break;
+						default:
+							throw err;
+					}
+				})
+				.finally(() => {
+					e.target.reset();
+				});
+		} catch (err) {
+			if (err.message === 'Same account converting')
+				noticesList.prepend(
+					systemMessage('Конвертация на тот же счет невозможна', 'warning')
+				);
+		}
 	};
 }
