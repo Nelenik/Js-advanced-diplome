@@ -9,6 +9,7 @@
 
 .page {
   flex-grow: 1;
+  padding-bottom: 40px;
 }
 
 
@@ -30,7 +31,8 @@
   }
 
   &--m {
-    font-size: 1.4375rem;
+    // font-size: 1.4375rem;
+    font-size: clamp(1.2rem, 0.3vw + 1.1rem, 1.4375rem);
     line-height: 115%;
     /* 23px/20 */
   }
@@ -48,6 +50,10 @@
   /* 20px/16 */
   color: $white;
   transition: background-color 0.3s ease;
+  @include sol576 {
+    font-weight: 400;
+    padding: 10px 15px;
+  }
 
   &:focus, &:hover {
     background-color: $brand-primary-hov;
@@ -60,6 +66,9 @@
   &--sm {
     padding: 14px 21px;
     font-size: 0.875rem;
+    @include sol576 {
+      padding: 10px 15px;
+    }
   }
 
   &--m {

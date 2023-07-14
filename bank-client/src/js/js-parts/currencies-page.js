@@ -43,7 +43,7 @@ function updateUserCurrencies(res) {
 	const currencyObjects = Object.values(res);
 	const currenciesElems = currencyObjects.map((item) => {
 		return el('li.user-currencies__item', [
-			el('span.user-currecies__code', item.code),
+			el('span.user-currencies__code', item.code),
 			el('span.user-currencies__amount', `${item.amount}`),
 		]);
 	});

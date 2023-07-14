@@ -1,56 +1,94 @@
-// * {
-//   outline: 1px solid red;
-// }
 .exchange {
+  padding-top: 50px;
 
-  &__title {
-
+  @include sol576 {
+    padding-top: 25px;
   }
 
-  &__blocks-wrap{
+  &__title {
+    margin-bottom: 56px;
+
+    @include sol576 {
+      margin-bottom: 25px;
+    }
+  }
+
+  &__blocks-wrap {
     display: grid;
     grid-template-columns: 43.880597% 52.462687%;
     grid-template-rows: minmax(411px, auto) minmax(273px, auto);
     row-gap: 44px;
     column-gap: 50px;
   }
+
   &__user-currencies {}
+
   &__course-dynamic {
     grid-row: span 2;
   }
-  &__converter{}
+
+  &__converter {}
 }
 
 .user-currencies {
   padding: 50px;
-  &__title {
 
-  }
+  &__title {}
 
   &__list {}
 
-  &__item {}
+  &__item {
+    display: flex;
+    gap: 10px;
+    &:not(:last-child) {
+      margin-bottom: 25px;
+    }
+    &::after {
+      content: '';
+      flex-grow: 1;
+      border-bottom: 1px dashed #000000;
+      order: 2;
+    }
+  }
 
-  &__code {}
-  &__amount {}
+  &__code {
+    order: 1;
+    color: #000;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 2px;
+  }
+
+  &__amount {
+    order: 3;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 2px;
+  }
 }
 
-.course-dynamic{
+.course-dynamic {
   display: flex;
   flex-direction: column;
   gap: 25px;
   max-height: 800px;
   padding: 50px;
+
   &__title {}
+
   &__list {
     flex-grow: 1;
     overflow-y: auto;
-    -ms-overflow-style: none;//ms&edge
-    scrollbar-width: none;//firefox
+    -ms-overflow-style: none; //ms&edge
+    scrollbar-width: none; //firefox
+
     &::-webkit-scrollbar {
-      display: none;//webkit
+      display: none; //webkit
     }
   }
+
   &__item {
 
     &::after {}
@@ -59,6 +97,7 @@
       .course-dynamic__rate {
         color: green;
       }
+
       &::after {}
     }
 
@@ -66,6 +105,7 @@
       .course-dynamic__rate {
         color: red;
       }
+
       &::after {}
     }
   }
@@ -73,16 +113,38 @@
 
 .converter {
   padding: 50px;
-  &__title{}
-  &__form{}
-  &__select-label{}
-  &__select__text{}
-  &__select-from{}
 
-  &__select-to{}
+  &__title {}
 
-  &__summ-label{}
-  &__summ-input{}
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(2, auto) 105px;
+    gap: 25px;
+  }
 
-  &__convert-btn{}
+  &__select-label {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__select__text {}
+
+  &__select-from {}
+
+  &__select-to {}
+
+  &__summ-label {
+    grid-row: 2/3;
+    grid-column: 1/3;
+    display: flex;
+    gap: 8px;
+  }
+
+  &__summ-input {}
+
+  &__convert-btn {
+    grid-row: span 2;
+    padding: 46px 13px;
+  }
 }

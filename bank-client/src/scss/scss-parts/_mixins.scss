@@ -93,6 +93,12 @@
   }
 }
 
+@mixin sol576 {
+  @media (max-width: 576px) {
+    @content;
+  }
+}
+
 @mixin sol500 {
   @media (max-width: 500px) {
     @content;

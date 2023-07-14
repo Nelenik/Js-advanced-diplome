@@ -1,6 +1,14 @@
 .banks {
-
-  &__title{}
+  padding-top: 50px;
+  @include sol576 {
+    padding-top: 25px;
+  }
+  &__title{
+    margin-bottom: 56px;
+    @include sol576 {
+      margin-bottom: 25px;
+    }
+  }
 
   &__map-block{
     position: relative;
