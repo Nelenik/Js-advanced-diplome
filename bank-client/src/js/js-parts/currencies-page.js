@@ -69,7 +69,7 @@ function updateCourseDynamic() {
 				'h2.course-dynamic__title.title.title--m',
 				'Изменение курсов в реальном времени'
 			),
-			courseDynamicList,
+			el('div.course-dynamic__list-wrap', courseDynamicList),
 		]);
 	});
 	curencyRateSocket.addEventListener('message', (e) => {
@@ -166,7 +166,7 @@ async function updateConverter() {
 			toSelect.select,
 		]),
 		el('label.converter__summ-label', [
-			'Сумма',
+			el('span.converter__summ-text', 'Сумма'),
 			el('input.converter__summ-input', {
 				type: 'text',
 				name: 'converterSumm',

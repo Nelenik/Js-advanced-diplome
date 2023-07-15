@@ -15,34 +15,77 @@
 
   &__blocks-wrap {
     display: grid;
-    grid-template-columns: 43.880597% 52.462687%;
+    grid-template-columns: 43.880597% auto;
     grid-template-rows: minmax(411px, auto) minmax(273px, auto);
     row-gap: 44px;
     column-gap: 50px;
+    min-height: 1000px;
+
+    @include sol1200 {
+      grid-template-columns: 100%;
+      grid-template-rows: auto;
+      gap: 30px;
+    }
+
   }
 
-  &__user-currencies {}
+  &__user-currencies {
+
+    @include sol1200 {
+      grid-row: 2/3;
+
+    }
+  }
 
   &__course-dynamic {
     grid-row: span 2;
+
+    @include sol1200 {
+      grid-row: 3/4;
+    }
   }
 
-  &__converter {}
+  &__converter {
+    @include sol1200 {
+      grid-row: 1/2;
+      justify-self: start;
+      ;
+    }
+  }
 }
 
 .user-currencies {
   padding: 50px;
 
+  @include sol576 {
+    padding: 35px;
+  }
+
   &__title {}
 
-  &__list {}
+  &__list {
+    @include sol1200 {
+      columns: 2;
+      column-gap: 50px;
+      column-rule: solid $gray-6;
+    }
+
+    @include sol767 {
+      columns: unset;
+    }
+  }
 
   &__item {
     display: flex;
     gap: 10px;
+
     &:not(:last-child) {
       margin-bottom: 25px;
+      @include sol576 {
+        margin-bottom: 15px;
+      }
     }
+
     &::after {
       content: '';
       flex-grow: 1;
@@ -58,6 +101,15 @@
     font-weight: 600;
     line-height: normal;
     letter-spacing: 2px;
+
+    @include sol920 {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    @include sol576 {
+      font-size: 0.75rem;
+    }
   }
 
   &__amount {
@@ -66,6 +118,14 @@
     font-weight: 400;
     line-height: normal;
     letter-spacing: 2px;
+
+    @include sol920 {
+      font-size: 1rem;
+    }
+
+    @include sol576 {
+      font-size: 0.75rem;
+    }
   }
 }
 
@@ -73,13 +133,18 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
-  max-height: 800px;
   padding: 50px;
+  min-height: 800px;
+
+  @include sol576 {
+    padding: 35px;
+  }
 
   &__title {}
 
-  &__list {
+  &__list-wrap {
     flex-grow: 1;
+    max-height: 1000px;
     overflow-y: auto;
     -ms-overflow-style: none; //ms&edge
     scrollbar-width: none; //firefox
@@ -89,24 +154,107 @@
     }
   }
 
-  &__item {
+  &__list {
 
-    &::after {}
+    @include sol1200 {
+      columns: 2;
+      column-gap: 50px;
+      column-rule: solid $gray-6;
+    }
+
+    @include sol767 {
+      columns: unset;
+    }
+  }
+
+  &__item {
+    display: flex;
+    gap: 10px;
+
+    &:not(:last-child) {
+      margin-bottom: 25px;
+      @include sol576 {
+        margin-bottom: 15px;
+      }
+    }
+
+    &::before {
+      content: '';
+      flex-grow: 1;
+      order: 2;
+      border-bottom: 1px dashed;
+    }
+
+    &::after {
+      content: '';
+      align-self: flex-end;
+      order: 4;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 10px 10px 10px;
+      border-color: transparent transparent #007bff transparent;
+      @include sol576 {
+        border-width: 0 6px 6px 6px;
+      }
+    }
 
     &--up {
-      .course-dynamic__rate {
-        color: green;
+      .course-dynamic__rate {}
+
+      &::before {
+        border-color: $state-sucess;
       }
 
-      &::after {}
+      &::after {
+        border-color: transparent transparent $state-sucess transparent;
+      }
     }
 
     &--down {
-      .course-dynamic__rate {
-        color: red;
+      .course-dynamic__rate {}
+
+      &::before {
+        border-color: $state-error;
       }
 
-      &::after {}
+      &::after {
+        border-color: transparent transparent $state-error transparent;
+        rotate: 180deg;
+      }
+    }
+  }
+
+  &__pair {
+    order: 1;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 2px;
+
+    @include sol920 {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    @include sol576 {
+      font-size: 0.75rem;
+    }
+  }
+
+  &__rate {
+    order: 3;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 2px;
+
+    @include sol920 {
+      font-size: 1rem;
+    }
+
+    @include sol576 {
+      font-size: 0.75rem;
     }
   }
 }
@@ -114,21 +262,98 @@
 .converter {
   padding: 50px;
 
+  @include sol1200 {
+    width: min(100%, 600px);
+  }
+
+  @include sol576 {
+    padding: 35px;
+  }
+
+
   &__title {}
 
   &__form {
     display: grid;
     grid-template-columns: repeat(2, auto) 105px;
     gap: 25px;
+    font-family: 'Ubuntu';
+
+    @include sol576 {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
   }
 
   &__select-label {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 8px;
+
+    @include sol576 {
+      justify-content: space-between;
+    }
   }
 
-  &__select__text {}
+  &__select-text, &__summ-text {
+    display: inline-block;
+    font-weight: 500;
+    line-height: 125%;
+    letter-spacing: -0.16px;
+    @include sol576 {
+      width: 50px;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__select-from,
+  &__select-to {
+    @include sol576 {
+      width: calc(100% - 58px);
+    }
+
+    .select__btn {
+      padding: 9px 17px;
+      min-height: 44px;
+      font-family: 'Ubuntu';
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 150%;
+      letter-spacing: -0.16px;
+      border-color: $gray-5;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+
+      @include sol576 {
+        font-size: 0.75rem;
+        min-height: unset;
+      }
+
+      &:focus-visible {
+        border-color: $brand-primary;
+      }
+
+      &:hover:not(:focus-visible) {
+        border-color: $brand-primary;
+        background-color: $brand-secondary2;
+      }
+    }
+
+    .select__dropdown {
+      display: block;
+      width: 300%;
+      columns: 3;
+
+      @include sol1200 {
+        width: 100%;
+        columns: unset;
+      }
+    }
+
+    .select__item {
+      display: block;
+    }
+  }
 
   &__select-from {}
 
@@ -138,13 +363,45 @@
     grid-row: 2/3;
     grid-column: 1/3;
     display: flex;
+    align-items: center;
     gap: 8px;
+
+    @include sol576 {
+      justify-content: space-between;
+    }
   }
 
-  &__summ-input {}
+  &__summ-input {
+    flex-grow: 1;
+    padding: 9px 16px;
+    min-height: 44px;
+    border-radius: 7px;
+    border: 1px solid $gray-5;
+    background: $white;
+    outline: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    @include sol576 {
+      width: calc(100% - 58px);
+      min-height: unset;
+    }
+
+    &:focus:not(.error .converter__summ-input) {
+      border-color: $brand-primary;
+    }
+
+    &:hover:not(:focus) {
+      border-color: $brand-primary;
+      background-color: $brand-secondary2;
+    }
+  }
 
   &__convert-btn {
     grid-row: span 2;
     padding: 46px 13px;
+
+    @include sol576 {
+      align-self: center;
+      padding: 15px 30px;
+    }
   }
 }
