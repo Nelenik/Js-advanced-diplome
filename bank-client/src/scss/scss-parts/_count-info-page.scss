@@ -1,81 +1,221 @@
 .count-info {
-  padding-top: 44px;
+  padding-top: 50px;
   display: grid;
-  grid-template-columns: minmax(606px, 1fr) minmax(684px, 1fr);
-  grid-template-rows: auto;
-  gap: 50px;
+  grid-template-columns: 45.2% 51.1%;
+  column-gap: 3.7%;
+  row-gap: 50px;
+
+  @include sol1200 {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  @include sol576 {
+    padding-top: 25px;
+  }
 
   &__title-row {
     grid-column: span 2;
     display: flex;
     gap: 40px;
     justify-content: space-between;
+    align-items: center;
   }
 
   &__title {}
 
-  &__back-link {}
+  &__back-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.16px;
+    @include sol920 {
+      font-size: 0;
+      gap: 0;
+      padding: 10px 18px;
+    }
+  }
 
   &__balance-row {
     grid-column: span 2;
     display: flex;
-    gap: 40px;
+    gap: 2.5%;
     justify-content: space-between;
+    align-items: center;
+    @include sol920 {
+      flex-direction: column;
+      gap: 30px;
+      align-items: flex-start
+    }
   }
 
   &__num {
     @include resetMg;
-    flex-basis: 40%;
-    /* 367px/1329 */
+    flex-basis: 60%;
+    font-size: clamp(1.1rem, 1.6vw + 0.8rem, 2.125rem);
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.68px;
   }
 
   &__balance {
     @include resetMg;
-    flex-basis: 15.124153%;
-    /* 201/1329 */
+    flex-basis: 38.5%;
   }
 
-    &__transaction {
-    }
+  &__transaction {}
 
-    &__chart-block{
-    }
+  &__chart-block {}
 
-    &__history {
+  &__history {
 
-      grid-column: span 2;
-    }
+    grid-column: span 2;
+  }
 
 }
 
 .balance {
-  &__text {}
+  display: flex;
+  gap: 50px;
+  justify-content: flex-end;
+  font-size: clamp(1rem, 0.4vw + 0.9rem, 1.25rem);
+  line-height: normal;
+  letter-spacing: -0.4px;
+  @include sol1024 {
+    gap: 20px;
+  }
 
-  &__value {}
+  &__text {
+    font-weight: 700;
+  }
+
+  &__value {
+    font-weight: 400;
+  }
 }
 
 .transaction {
   padding: 25px 50px;
   min-height: 288px;
+  @include sol1200 {
+    width: min(100%, 800px);
+  }
+
+  @include sol920 {
+    padding: 25px;
+  }
 
   &__title {}
 
-  &__field-wrap{
-    position: relative;
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
   }
 
-  &__select-field {}
+  &__field-wrap {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    align-items: center;
 
-  &__amount-field {}
+    span {
+      // flex-grow: 1;
+      width: calc(41% - 9px);
+      text-align: right;
+      font-family: 'Ubuntu';
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 125%;
+      letter-spacing: -0.16px;
+    }
+    @include sol576 {
+      flex-direction: column;
 
-  &__sbmt-btn {}
+      span {
+        width: 100%;
+        text-align: left;
+      }
+    }
+  }
+
+  &__select-field {
+    // width: 59.288538%;
+    width: calc(59% - 9px);
+    flex-grow: 1;
+
+    @include sol576 {
+      width: 100%;
+    }
+
+    &.error {
+      .select__autocomplete {
+        border-color: #EB5757;
+      }
+    }
+
+    /* 300/506 */
+    .select__autocomplete {
+      padding: 9px 16px;
+      border: 1px solid $gray-5;
+      font-family: 'Ubuntu';
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 150%;
+      letter-spacing: -0.16px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+
+      &:focus:not(.transaction__select-field.error .select__autocomplete),
+      &:hover {
+        background-color: #EBEFF7;
+        border-color: $brand-primary;
+      }
+    }
+  }
+
+  &__amount-field {
+    width: calc(59% - 9px);
+    flex-grow: 1;
+    padding: 9px 16px;
+    border-radius: 7px;
+    border: 1px solid $gray-5;
+    font-family: 'Ubuntu';
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 150%;
+    letter-spacing: -0.16px;
+    outline: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    @include sol576 {
+      width: 100%;
+    }
+
+    &:hover,
+    &:focus:not(.error .transaction__amount-field) {
+      background-color: #EBEFF7;
+      border-color: $brand-primary;
+    }
+  }
+
+  &__sbmt-btn {
+    align-self: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
 }
 
 .pay-system-img {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 0;
+  right: 59.288538%;
+  transform: translateX(100%);
+  bottom: 105%;
   display: block;
   max-width: unset;
   width: 60px;
@@ -85,6 +225,9 @@
 .history {
   padding: 25px 50px;
   min-height: 208px;
+  @include sol920 {
+    padding: 25px;
+  }
 
   &__title {}
 
@@ -100,6 +243,9 @@
 .chart-block {
   padding: 25px 50px;
   min-height: 288px;
+  @include sol920 {
+    padding: 25px;
+  }
 
   &__title {}
 

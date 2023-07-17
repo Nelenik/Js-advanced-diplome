@@ -261,9 +261,10 @@
 
 .converter {
   padding: 50px;
+  position: relative;
 
   @include sol1200 {
-    width: min(100%, 600px);
+    width: min(100%, 800px);
   }
 
   @include sol576 {

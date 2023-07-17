@@ -13,8 +13,12 @@
 .head-row {
   border-radius: 15px;
   background-color: $brand-primary;
-
   color: $white;
+
+  @include sol920 {
+    display: none;
+
+  }
 
   &__cell {
     padding: 20px 0;
@@ -47,12 +51,26 @@
 .body-row {
   border-bottom: 1px solid rgba(0, 82, 255, 0.1);
 
+
+  @include sol920 {
+    margin-bottom: 15px;
+    display: block;
+    border-bottom: 1px solid rgba(0, 82, 255, 0.3);
+
+    border-right: 1px solid rgba(0, 82, 255, 0.3);
+    border-left: 1px solid rgba(0, 82, 255, 0.3);
+  }
+
   &__cell {
     padding: 21px 15px 26px;
 
     &:first-child {
       padding-left: 50px;
       word-break: break-word;
+
+      @include sol920 {
+        padding: 0;
+      }
     }
 
     &:nth-child(2) {
@@ -61,10 +79,38 @@
 
     &:last-child {
       padding-right: 50px;
+
+      @include sol920 {
+        padding: 0;
+      }
+    }
+
+    @include sol920 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid rgba(0, 82, 255, 0.3);
+      padding: 0;
+
+      &::before {
+        content: attr(data-label);
+        display: inline-block;
+        width: calc(100%/2);
+        padding: 8px 10px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 120%;
+        color: $gray-2;
+        // background-color: $brand-primary;
+      }
     }
   }
 
-  &__text {}
+  &__text {
+    width: calc(100%/2);
+    padding: 8px 10px;
+    hyphens: auto;
+  }
 
 }
 

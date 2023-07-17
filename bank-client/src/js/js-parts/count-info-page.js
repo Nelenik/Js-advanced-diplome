@@ -203,7 +203,7 @@ function updateDynamicBlocks(res) {
 
 // функция создает форму переводов
 function createTransferForm(countId) {
-	const form = el('form.count-info__trans-form.transaction', {
+	const form = el('form.transaction__form', {
 		name: 'transForm',
 		autocomplete: 'off',
 	});
@@ -220,7 +220,7 @@ function createTransferForm(countId) {
 		type: 'number',
 		name: 'transAmount',
 	});
-	const transSbmtBtn = el('button.btn-reset.transaction__sbmt-btn', {
+	const transSbmtBtn = el('button.btn-reset.blue-btn.transaction__sbmt-btn', {
 		type: 'submit',
 	});
 	transSbmtBtn.innerHTML = `${mailSvg} Отправить`;

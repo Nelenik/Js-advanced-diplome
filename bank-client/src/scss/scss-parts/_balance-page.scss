@@ -1,31 +1,54 @@
 .balance-page {
-
+  padding-top: 50px;
+  @include sol576 {
+    padding-top: 25px;
+  }
   &__title-row {
     display: flex;
     gap: 40px;
     justify-content: space-between;
     margin-bottom: 30px;
+    align-items: center;
   }
 
   &__title{}
-  &__back-link {}
+  &__back-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.16px;
+    @include sol920 {
+      font-size: 0;
+      gap: 0;
+      padding: 10px 18px;
+    }
+  }
 
   &__balance-row{
     display: flex;
-    gap: 40px;
+    display: flex;
+    gap: 2.5%;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 50px;
+    @include sol920 {
+      flex-direction: column;
+      gap: 30px;
+      align-items: flex-start
+    }
   }
   &__num {
     @include resetMg;
-    flex-basis: 40%;
-    /* 367px/1329 */
+    flex-basis: 60%;
+    font-size: clamp(1.1rem, 1.6vw + 0.8rem, 2.125rem);
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.68px;
   }
 
   &__balance {
     @include resetMg;
-    flex-basis: 15.124153%;
-    /* 201/1329 */
+    flex-basis: 38.5%;
   }
   &__chart-block {
     min-height: 288px;
@@ -38,6 +61,9 @@
 
 .dynamic-chart {
   padding: 25px 100px 20px;
+  @include sol920 {
+    padding: 25px 25px 20px;
+  }
 
   &__wrap {
     flex-grow: 1;
@@ -46,6 +72,9 @@
 
 .ratio-chart {
   padding: 25px 100px 20px;
+  @include sol920 {
+    padding: 25px 25px 20px;
+  }
 
   &__wrap {
     flex-grow: 1;
@@ -60,11 +89,14 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
+  @include sol576 {
+    flex-direction: column;
+  }
 
   a {
     text-decoration: none;
     outline: none;
-    color: inherit;
+    // color: inherit;
   }
 
   &__wrapper {
@@ -75,13 +107,22 @@
     padding: 5px 10px;
     margin-inline: 5px;
     line-height: 150%;
-    border: 1px solid #eaeaea;
+    border: 1px solid $brand-primary;
     border-radius: 7px;
     height: 100%;
+    color: $gray-black;
+    transition: color 0.3s ease, background-color 0.3s ease;
     &--current {}
 
-    &:focus {
-      border-color: rgb(118, 155, 210);
+    &:focus, &--current {
+      background-color: $brand-primary;
+      color: $white;
+    }
+    &:hover:not(:focus):not(.pagination__btn--current) {
+      background-color: $brand-primary-hov;
+    }
+    &:active {
+      background-color: $brand-primary-act;
     }
   }
 
@@ -97,6 +138,7 @@
   &__controls {
     display: flex;
     gap: 10px;
+
     &--left {}
 
     &--right {}
@@ -106,9 +148,11 @@
     display: inline-block;
     padding: 5px 10px;
     line-height: 150%;
-    border: 1px solid #eaeaea;
+    border: 1px solid $brand-primary;
     border-radius: 7px;
     height: 100%;
+    color: $gray-black;
+    transition: color 0.3s ease, background-color 0.3s ease;
     &--prev {}
 
     &--next {}
@@ -121,8 +165,15 @@
       pointer-events: none;
       opacity: 0.5;
     }
-    &:focus {
-      border-color: rgb(118, 155, 210);
+    &:focus-visible {
+      background-color: $brand-primary;
+      color: $white;
+    }
+    &:hover {
+      background-color: $brand-primary-hov;
+    }
+    &:active {
+      background-color: $brand-primary-act;
     }
   }
 }

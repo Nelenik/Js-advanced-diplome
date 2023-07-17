@@ -110,17 +110,17 @@
     width: 100%;
     padding: 10px 16px;
     border-radius: 7px;
-    border: 1px solid #116ACC;
+    border: 1px solid #9CA3AF;
     background-color: #ffffff;
     outline: none;
 
-    &:hover {
-      background-color: rgba(160, 195, 255, 0.2);
-    }
+    // &:hover {
+    //   background-color: rgba(160, 195, 255, 0.2);
+    // }
 
-    &:focus-visible,
-    &:focus {
-      background-color: rgba(160, 195, 255, 0.4)
-    }
+    // &:focus-visible,
+    // &:focus {
+    //   background-color: rgba(160, 195, 255, 0.4)
+    // }
   }
 }

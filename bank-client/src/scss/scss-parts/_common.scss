@@ -55,7 +55,7 @@
     padding: 10px 15px;
   }
 
-  &:focus, &:hover {
+  &:focus-visible, &:hover {
     background-color: $brand-primary-hov;
   }
 
@@ -91,6 +91,9 @@
   flex-direction: column;
   gap: 25px;
   border-radius: 50px;
+  @include sol920 {
+    border-radius: 20px;
+  }
 
   &--white {
     background: $white;

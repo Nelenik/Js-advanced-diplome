@@ -68,11 +68,11 @@
   }
 }
 
-// @mixin sol1100 {
-//   @media (max-width: 1200px) {
-//     @content;
-//   }
-// }
+@mixin sol1024 {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
 
 
 @mixin sol920 {

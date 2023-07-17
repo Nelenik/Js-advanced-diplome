@@ -79,6 +79,8 @@ const balanceUpdateBlocks = {
 		new Pagination(tableWrapper, {
 			pages: pagesCount,
 			ellipsis: true,
+			visibleAtLeft: 1,
+			visibleAtRight: 1,
 			onClick: (num) => {
 				const start = (num - 1) * pas;
 				const end = start + pas;
