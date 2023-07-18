@@ -45,6 +45,9 @@
     }
     .select__btn {
       border-color: $brand-primary;
+      &:focus-visible, &:hover {
+        background-color: #EBEFF7 ;
+      }
     }
 
     .select__item-text {

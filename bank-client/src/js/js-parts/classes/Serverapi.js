@@ -8,7 +8,7 @@ export class ServerApi {
 	getToken() {
 		const token = sessionStorage.getItem('token');
 		if (token) return token;
-		else throw Error('Session expired');
+		else throw Error('Unauthorized');
 	}
 	/*processResponse(response): Обрабатывает ответ от сервера, извлекая ошибку и полезную нагрузку из JSON-ответа. Если есть ошибка, генерируется соответствующая ошибка; если есть полезная нагрузка, она возвращается; в противном случае генерируется ошибка "Нет данных". */
 	async processResponse(response) {

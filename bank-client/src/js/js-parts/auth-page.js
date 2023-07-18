@@ -110,7 +110,8 @@ function authFormHandler(e) {
 					passValid.showMessage('Неверный пароль', 'error');
 					break;
 				default:
-					throw err;
+					console.log(err.message);
+				// throw err;
 			}
 		});
 }

@@ -236,6 +236,13 @@
       content: '';
       position: absolute;
       inset: 0;
+      border-radius: 50px;
+      @include sol920 {
+        border-radius: 20px;;
+      }
+    }
+    &:focus-visible::before {
+      border: 1px solid $brand-primary;
     }
   }
 }
@@ -257,11 +264,14 @@
       content: '';
       position: absolute;
       inset: 0;
-      // z-index: 10;
+      border-radius: 50px;
+      @include sol920 {
+        border-radius: 20px;;
+      }
     }
 
     &:focus-visible::before {
-      outline: 1px solid red;
+      border: 1px solid $brand-primary;
     }
   }
 
