@@ -201,13 +201,14 @@ export class BalancePerPeriod {
 			monthArr.forEach((item) => {
 				if (item.to === this.countId) {
 					incoming += item.amount;
+					incoming = Number(incoming.toFixed(0));
 				}
 				if (item.from === this.countId) {
 					outgoing += item.amount;
+					outgoing = Number(outgoing.toFixed(0));
 				}
 			});
 		}
-
 		return { incoming, outgoing };
 	}
 	arrangeBalanceData() {

@@ -24,7 +24,6 @@ export class Header {
 
 	constructor(options) {
 		const { appContainer, enableMenu = false } = options;
-		console.log(appContainer);
 		this.appContainer = appContainer;
 		this.header = el('header.header');
 		this.container = el('.container.header__container');
